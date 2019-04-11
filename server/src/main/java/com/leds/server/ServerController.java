@@ -37,7 +37,7 @@ public class ServerController{
         User user = userRepo.findByNickname(nickname);
         System.out.println(user);
         if(!(user == null) && user.getPassword().equals(password)){
-            userRepo.setLoggedInById(true, user.getIdUser());
+            user.setLoggedIn(true);
             return user;
         }
         else{
@@ -64,7 +64,8 @@ public class ServerController{
     public List<Chat> chatList(@RequestParam("nickname") String nickname){
         User user = userRepo.findByNickname(nickname);
         if(user != null && user.getLoggedIn()){
-            return chatRepo.findByUser(user.getIdUser());
+            //return chatRepo.findByUser(user.getIdUser());
+            return null;
         }
         return null;
     }
