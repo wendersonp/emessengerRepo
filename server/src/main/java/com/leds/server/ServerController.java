@@ -72,24 +72,23 @@ public class ServerController{
     }
 
     @RequestMapping(value = "/message/send", method = RequestMethod.POST)
-    public Message messageSend(@RequestParam("sender_nickname") String senderNickname, 
-        @RequestParam("chat_id") Long chatId,
-        @RequestParam("text_message") String textMessage){
-            Chat chat = chatRepo.findById(chatId).get();
-            if(senderNickname == chat.getUser0().getNickname()){
-                Message message = new Message(LocalDateTime.now(), textMessage, chat.getUser0(), chat);
+    public Message sendMessage(@RequestParam("sender_nickname") String senderNickname,
+    @RequestParam("chat_id") Long chatId,
+    @RequestParam("text_message") String textMessage){
+        Chat chat = chatRepo.findById(chatId).get();
+        User senderUser = userRepo.findByNickname(senderNickname);
+        if(senderUser != null){
+            if(senderUser.getIdUser() == chat.getUser0().getIdUser() || senderUser.getIdUser() == chat.getUser1().getIdUser()){
+                LocalDateTime updateTime = LocalDateTime.now();
+                Message message = new Message(updateTime, textMessage, senderUser, chat);
                 messageRepo.save(message);
+                chat.setLastUpdate(updateTime);
                 return message;
             }
-            else if(senderNickname == chat.getUser1().getNickname()){
-                Message message = new Message(LocalDateTime.now(), textMessage, chat.getUser1(), chat);
-                messageRepo.save(message);
-                return message;
-            }
-            else{
-                return null;
-            }
+            return null;
         }
+        return null;
+    }
     
 
 } 
