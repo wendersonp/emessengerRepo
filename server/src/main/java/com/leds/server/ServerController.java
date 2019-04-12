@@ -90,5 +90,16 @@ public class ServerController{
         return null;
     }
     
+    @RequestMapping(value = "/message/getlist", method = RequestMethod.GET)
+    public List<Message> getChatMessages(@RequestParam("nickname") String nickname, 
+    @RequestParam("chat_id") Long chatId){
+        Chat chat = chatRepo.findById(chatId).get();
+        if(chat.getUser0().getNickname() == nickname || chat.getUser1().getNickname() == nickname){
+            return messageRepo.findByChatFrOrderBySentTimeDesc(chat);
+        }
+        else{
+            return null;
+        }
+    }
 
 } 
