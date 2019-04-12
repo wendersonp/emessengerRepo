@@ -40,6 +40,8 @@ public class ServerController{
         System.out.println(user);
         if(!(user == null) && user.getPassword().equals(password)){
             user.setLoggedIn(true);
+            User user2 = userRepo.findByNickname(nickname);
+            System.out.println(user2.getIdUser());
             return user;
         }
         else{
@@ -49,17 +51,19 @@ public class ServerController{
     }
 
     @RequestMapping(value = "/chat/create", method = RequestMethod.POST)
-    public Chat chatCreate(@RequestParam("subject") String subject, @RequestParam("creator_nickname") String creatorNickname, 
+    public String chatCreate(@RequestParam("subject") String subject, @RequestParam("creator_nickname") String creatorNickname, 
     @RequestParam("destination_nickname") String destinationNickname){
         User user0 = userRepo.findByNickname(creatorNickname);
         User user1 = userRepo.findByNickname(destinationNickname);
 
+        System.out.println(user0.getIdUser());
+
         if(user0 != null && user1 != null && user0.getLoggedIn() == true){
            Chat chat = new Chat(subject, LocalDateTime.now(), user0, user1);
            chatRepo.save(chat);
-           return chat;
+           return "Success";
         }
-        return null;
+        return "Fail";
     }
 
     @RequestMapping(value = "/chat/getlist", method = RequestMethod.GET)
