@@ -28,6 +28,8 @@ public class Chat{
     @ManyToOne
     private User user1;
 
+    protected Chat (){}
+
     public Chat (String subject, LocalDateTime lastUpdate, User user0, User user1){
         this.subject = subject;
         this.lastUpdate = lastUpdate;

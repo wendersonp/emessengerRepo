@@ -34,6 +34,8 @@ public class Message{
         this.chatFr = chatFr;
     }
 
+    protected Message (){}
+
     /**
      * @return the idMessage
      */

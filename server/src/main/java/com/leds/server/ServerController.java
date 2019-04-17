@@ -32,16 +32,14 @@ public class ServerController{
         return user;
     } 
 
-    @RequestMapping(value = "/user/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/login", method = RequestMethod.PUT)
 
     public User userLogin(@RequestParam("nickname") String nickname,
     @RequestParam("password") String password){
         User user = userRepo.findByNickname(nickname);
-        System.out.println(user);
         if(!(user == null) && user.getPassword().equals(password)){
             user.setLoggedIn(true);
-            User user2 = userRepo.findByNickname(nickname);
-            System.out.println(user2.getIdUser());
+            userRepo.save(user);
             return user;
         }
         else{
@@ -56,7 +54,6 @@ public class ServerController{
         User user0 = userRepo.findByNickname(creatorNickname);
         User user1 = userRepo.findByNickname(destinationNickname);
 
-        System.out.println(user0.getIdUser());
 
         if(user0 != null && user1 != null && user0.getLoggedIn() == true){
            Chat chat = new Chat(subject, LocalDateTime.now(), user0, user1);
@@ -70,7 +67,8 @@ public class ServerController{
     public List<Chat> chatList(@RequestParam("nickname") String nickname){
         User user = userRepo.findByNickname(nickname);
         if(user != null && user.getLoggedIn() == true){
-            return chatRepo.findByUsers(user.getIdUser());
+            List<Chat> chatList = chatRepo.findByUsers(user.getIdUser());
+            return chatList;
         }
         return null;
     }
@@ -87,6 +85,7 @@ public class ServerController{
                 Message message = new Message(updateTime, textMessage, senderUser, chat);
                 messageRepo.save(message);
                 chat.setLastUpdate(updateTime);
+                chatRepo.save(chat);
                 return message;
             }
             return null;
@@ -100,7 +99,7 @@ public class ServerController{
         User user = userRepo.findByNickname(nickname);
         if(user != null && user.getLoggedIn() == true){
             Chat chat = chatRepo.findById(chatId).get();
-            if(chat.getUser0().getNickname() == nickname || chat.getUser1().getNickname() == nickname){
+            if(chat.getUser0().getNickname().equals(nickname) || chat.getUser1().getNickname().equals(nickname)){
                 return messageRepo.findByChatFrOrderBySentTimeDesc(chat);
             }
         }
