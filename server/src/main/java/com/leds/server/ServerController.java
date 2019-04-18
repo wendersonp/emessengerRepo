@@ -22,24 +22,25 @@ public class ServerController{
     @Autowired
     MessageRepository messageRepo;
     
-    @RequestMapping(value = "/user/signup", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/signup", method = RequestMethod.GET)
 
     public User userSignUp(@RequestParam("name") String name, 
     @RequestParam("nickname") String nickname,
     @RequestParam("password") String password){
         User user = new User(name, nickname, password);
         userRepo.save(user);
+        System.out.println("Chegou aqui");
         return user;
     } 
 
-    @RequestMapping(value = "/user/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/login", method = RequestMethod.GET)
 
     public User userLogin(@RequestParam("nickname") String nickname,
     @RequestParam("password") String password){
         User user = userRepo.findByNickname(nickname);
-        System.out.println(user);
         if(!(user == null) && user.getPassword().equals(password)){
             user.setLoggedIn(true);
+            userRepo.save(user);
             return user;
         }
         else{
@@ -48,49 +49,67 @@ public class ServerController{
         }
     }
 
-    @RequestMapping(value = "/chat/create", method = RequestMethod.POST)
-    public Chat chatCreate(@RequestParam("subject") String subject, @RequestParam("creator_nickname") String creatorNickname, 
+    @RequestMapping(value = "/chat/create", method = RequestMethod.GET)
+    public String chatCreate(@RequestParam("subject") String subject, @RequestParam("creator_nickname") String creatorNickname, 
     @RequestParam("destination_nickname") String destinationNickname){
         User user0 = userRepo.findByNickname(creatorNickname);
         User user1 = userRepo.findByNickname(destinationNickname);
 
-        if(user0 != null && user1 != null && user0.getLoggedIn()){
+
+        if(user0 != null && user1 != null && user0.getLoggedIn() == true){
            Chat chat = new Chat(subject, LocalDateTime.now(), user0, user1);
            chatRepo.save(chat);
-           return chat;
+           return "Success";
         }
-        return null;
+        return "Fail";
     }
 
     @RequestMapping(value = "/chat/getlist", method = RequestMethod.GET)
     public List<Chat> chatList(@RequestParam("nickname") String nickname){
         User user = userRepo.findByNickname(nickname);
-        if(user != null && user.getLoggedIn()){
-            return chatRepo.findByUsers(user.getIdUser());
+        if(user != null && user.getLoggedIn() == true){
+            List<Chat> chatList = chatRepo.findByUsers(user.getIdUser());
+            return chatList;
         }
         return null;
     }
 
-    @RequestMapping(value = "/message/send", method = RequestMethod.POST)
-    public Message messageSend(@RequestParam("sender_nickname") String senderNickname, 
-        @RequestParam("chat_id") Long chatId,
-        @RequestParam("text_message") String textMessage){
+    @RequestMapping(value = "/message/send", method = RequestMethod.GET)
+    public Message sendMessage(@RequestParam("sender_nickname") String senderNickname,
+    @RequestParam("chat_id") Long chatId,
+    @RequestParam("text_message") String textMessage){
+        Chat chat = chatRepo.findById(chatId).get();
+        User senderUser = userRepo.findByNickname(senderNickname);
+        if(senderUser != null && senderUser.getLoggedIn() == true){
+            if(senderUser.getIdUser() == chat.getUser0().getIdUser() || senderUser.getIdUser() == chat.getUser1().getIdUser()){
+                LocalDateTime updateTime = LocalDateTime.now();
+                Message message = new Message(updateTime, textMessage, senderUser, chat);
+                messageRepo.save(message);
+                chat.setLastUpdate(updateTime);
+                chatRepo.save(chat);
+                return message;
+            }
+            return null;
+        }
+        return null;
+    }
+    
+    @RequestMapping(value = "/message/getlist", method = RequestMethod.GET)
+    public List<Message> getChatMessages(@RequestParam("nickname") String nickname, 
+    @RequestParam("chat_id") Long chatId){
+        User user = userRepo.findByNickname(nickname);
+        if(user != null && user.getLoggedIn() == true){
             Chat chat = chatRepo.findById(chatId).get();
-            if(senderNickname == chat.getUser0().getNickname()){
-                Message message = new Message(LocalDateTime.now(), textMessage, chat.getUser0(), chat);
-                messageRepo.save(message);
-                return message;
-            }
-            else if(senderNickname == chat.getUser1().getNickname()){
-                Message message = new Message(LocalDateTime.now(), textMessage, chat.getUser1(), chat);
-                messageRepo.save(message);
-                return message;
-            }
-            else{
-                return null;
+            if(chat.getUser0().getNickname().equals(nickname) || chat.getUser1().getNickname().equals(nickname)){
+                return messageRepo.findByChatFrOrderBySentTimeDesc(chat);
             }
         }
-    
+        return null;
+    }
 
+    @RequestMapping("/secured")
+    public String secured(){
+        return "Utilizando HTTPS = OK";
+    }
 
 } 
