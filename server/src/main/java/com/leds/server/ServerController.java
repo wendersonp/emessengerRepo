@@ -106,4 +106,9 @@ public class ServerController{
         return null;
     }
 
+    @RequestMapping("/secured")
+    public String secured(){
+        return "Utilizando HTTPS = OK";
+    }
+
 } 
