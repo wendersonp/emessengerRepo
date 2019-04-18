@@ -22,17 +22,18 @@ public class ServerController{
     @Autowired
     MessageRepository messageRepo;
     
-    @RequestMapping(value = "/user/signup", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/signup", method = RequestMethod.GET)
 
     public User userSignUp(@RequestParam("name") String name, 
     @RequestParam("nickname") String nickname,
     @RequestParam("password") String password){
         User user = new User(name, nickname, password);
         userRepo.save(user);
+        System.out.println("Chegou aqui");
         return user;
     } 
 
-    @RequestMapping(value = "/user/login", method = RequestMethod.PUT)
+    @RequestMapping(value = "/user/login", method = RequestMethod.GET)
 
     public User userLogin(@RequestParam("nickname") String nickname,
     @RequestParam("password") String password){
@@ -48,7 +49,7 @@ public class ServerController{
         }
     }
 
-    @RequestMapping(value = "/chat/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/chat/create", method = RequestMethod.GET)
     public String chatCreate(@RequestParam("subject") String subject, @RequestParam("creator_nickname") String creatorNickname, 
     @RequestParam("destination_nickname") String destinationNickname){
         User user0 = userRepo.findByNickname(creatorNickname);
@@ -73,7 +74,7 @@ public class ServerController{
         return null;
     }
 
-    @RequestMapping(value = "/message/send", method = RequestMethod.POST)
+    @RequestMapping(value = "/message/send", method = RequestMethod.GET)
     public Message sendMessage(@RequestParam("sender_nickname") String senderNickname,
     @RequestParam("chat_id") Long chatId,
     @RequestParam("text_message") String textMessage){
