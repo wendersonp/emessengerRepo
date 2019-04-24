@@ -1,4 +1,4 @@
-package com.leds.server;
+/*package com.leds.server;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
@@ -41,4 +41,4 @@ public class ConfigurationHTTPS{
 
         return connector;
     }
-}
+}*/
