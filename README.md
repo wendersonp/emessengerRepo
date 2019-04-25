@@ -13,12 +13,31 @@ Acesse o link: https://spring.io/guides/gs/accessing-data-mysql/ para conferir a
 
 Em resumo:
 - Abra o mysql com privilégio root em um terminal
-- Execute a Query 'CREATE DATABASE emessenger_db' para criar o banco de dados
-- Execute a Query 'CREATE USER 'emsgserver'@'%' IDENTIFIED BY 'leds123'' para criar o usuário que acessa o banco
-- Execute a Query 'GRANT ALL ON emessenger_db.* TO 'emsgserver'@'%' IDENTIFIED BY 'leds123'' para conceder permissão ao usuário criado para modificar o banco
+- Execute a Query 'CREATE DATABASE emessenger_db;' para criar o banco de dados
+- Execute a Query 'CREATE USER 'emsgserver'@'%' IDENTIFIED BY 'leds123';' para criar o usuário que acessa o banco
+- Execute a Query 'GRANT ALL ON emessenger_db.* TO 'emsgserver'@'%' IDENTIFIED BY 'leds123';' para conceder permissão ao usuário criado para modificar o banco
 - Antes da primeira execução do aplicativo, mude o valor do atributo spring.jpa.hibernate.ddl-auto para 'create' em application.properties. Em execuções seguintes, retorne o valor deste atributo para 'none'. 
 
+## Obter Token de acesso
+
+- Requisita um token de acesso ao servidor
+- Tipo de Requisição HTTP: POST
+- Endereço: /oauth/token
+- Escrever o Header com o seguinte parâmetro:
+    - Authorization = Basic <base64_encode>
+- <base64_encode> é gerado codificando emsgserver:leds123 em base64
+- Parâmetros:
+    - grant_type = password
+    - username = emsgserver
+    - password = leds123
+- Retorno: .JSON com o token, copiar o atributo access_token
+- Em todas as outras requisições, escrever no header o parâmetro:
+    -Authorization = <token_type> <access_token>
+
+
 ## Requisições suportadas pelo servidor
+
+
 
 ### Criar usuário
 
