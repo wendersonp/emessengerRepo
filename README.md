@@ -1,6 +1,5 @@
 ## emessengerRepo
 
-<<<<<<< HEAD
 ## Instruções para obter o certificado SSL 
 - Execute o comando no terminal: keytool -genkey -alias tomcat
 =======
@@ -8,7 +7,17 @@
 - Obs: o certificado já se encontra no diretório server/src/main/resources com o nome keystore.p12.
 - Execute o comando no terminal: keytool -genkey -alias tomcat -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 - validity 3650
 
-=======
+## Instruções para configurar o banco de dados
+
+Acesse o link: https://spring.io/guides/gs/accessing-data-mysql/ para conferir as configurações em detalhes
+
+Em resumo:
+- Abra o mysql com privilégio root em um terminal
+- Execute a Query 'CREATE DATABASE emessenger_db' para criar o banco de dados
+- Execute a Query 'CREATE USER 'emsgserver'@'%' IDENTIFIED BY 'leds123'' para criar o usuário que acessa o banco
+- Execute a Query 'GRANT ALL ON emessenger_db.* TO 'emsgserver'@'%' IDENTIFIED BY 'leds123'' para conceder permissão ao usuário criado para modificar o banco
+- Antes da primeira execução do aplicativo, mude o valor do atributo spring.jpa.hibernate.ddl-auto para 'create' em application.properties. Em execuções seguintes, retorne o valor deste atributo para 'none'. 
+
 ## Requisições suportadas pelo servidor
 
 ### Criar usuário
@@ -31,6 +40,15 @@
     - nickname: Identificação única do usuário
     - password: Senha do usuário
 - Retorno: String "Login Success", se o login for feito com exito, ou String "Login Error", se o login falhar
+
+### Realizar logout de Usuário
+
+- Função: Realiza o logout do usuário, com alteração de valor no banco de dados
+- Tipo de Requisição HTTP: PUT
+- Endereço: /user/logout
+- Parâmetros:
+    - nickname: Identificação única do usuário
+- Retorno: String "Logout Success", se o logout for feito com exito, ou String "Logout Error", se o logout falhar
 
 ### Criar chat
 
