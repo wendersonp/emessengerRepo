@@ -28,7 +28,6 @@ public class ServerController{
     @RequestParam("password") String password){
         User user = new User(name, nickname, password);
         userRepo.save(user);
-        System.out.println("Test");
         return user;
     } 
 
