@@ -149,7 +149,8 @@ public class ServerController{
     @RequestMapping(value="/chat/addusers", method=RequestMethod.GET)
     public Chat addUsersToChat(@RequestParam("users_nicknames") List<String> usersNicknames, @RequestParam("chat_id") Long idChat){
         Chat chat = chatRepo.findById(idChat).get();
-        List<User> chatUsers = chat.getUsers();
+        List<User> chatUsers = new ArrayList<User>();
+        chatUsers.addAll(chat.getUsers());
         for(String nickname: usersNicknames){
             User user = userRepo.findByNickname(nickname);
             if(user != null){
