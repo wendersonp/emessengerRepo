@@ -1,12 +1,15 @@
 package com.leds.server;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Chat{
@@ -22,19 +25,16 @@ public class Chat{
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime lastUpdate;
 
-    @ManyToOne
-    private User user0;
-
-    @ManyToOne
-    private User user1;
+    @ManyToMany
+    @JoinTable(name = "Chat_User")
+    private List<User> users = new ArrayList<User>();
 
     protected Chat (){}
 
-    public Chat (String subject, LocalDateTime lastUpdate, User user0, User user1){
+    public Chat (String subject, LocalDateTime lastUpdate, List<User> users){
         this.subject = subject;
         this.lastUpdate = lastUpdate;
-        this.user0 = user0;
-        this.user1 = user1;
+        this.users.addAll(users);
     }
 
     /**
@@ -80,31 +80,18 @@ public class Chat{
     }
 
     /**
-     * @return the user0
+     * @return the users
      */
-    public User getUser0() {
-        return user0;
+    public List<User> getUsers() {
+        return users;
     }
 
     /**
-     * @param user0 the user0 to set
+     * @param users the users to set
      */
-    public void setUser0(User user0) {
-        this.user0 = user0;
-    }
-
-    /**
-     * @return the user1
-     */
-    public User getUser1() {
-        return user1;
-    }
-
-    /**
-     * @param user1 the user1 to set
-     */
-    public void setUser1(User user1) {
-        this.user1 = user1;
+    public void setUsers(List<User> users) {
+        this.users.clear();
+        this.users.addAll(users);
     }
 
 }
