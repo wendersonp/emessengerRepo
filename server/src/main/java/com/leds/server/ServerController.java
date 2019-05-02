@@ -60,7 +60,7 @@ public class ServerController{
         }
     }
 
-    @RequestMapping(value = "/chat/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/logged/chat/create", method = RequestMethod.POST)
     public Chat chatCreate(@RequestParam("subject") String subject, @RequestParam("users_nicknames") List<String> usersNicknames){
         
         List<User> userList = new ArrayList<User>();
@@ -94,7 +94,7 @@ public class ServerController{
         return null;
     }
 
-    @RequestMapping(value = "/chat/getlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/logged/chat/getlist", method = RequestMethod.GET)
     public List<Chat> chatList(@RequestParam("nickname") String nickname){
         User user = userRepo.findByNickname(nickname);
         if(user != null && user.getLoggedIn() == true){
@@ -104,7 +104,7 @@ public class ServerController{
         return null;
     }
 
-    @RequestMapping(value = "/message/send", method = RequestMethod.POST)
+    @RequestMapping(value = "/logged/message/send", method = RequestMethod.POST)
     public Message sendMessage(@RequestParam("sender_nickname") String senderNickname,
     @RequestParam("chat_id") Long chatId,
     @RequestParam("text_message") String textMessage){
@@ -135,7 +135,7 @@ public class ServerController{
         return null;
     }
     
-    @RequestMapping(value = "/message/getlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/logged/message/getlist", method = RequestMethod.GET)
     public List<Message> getChatMessages(@RequestParam("nickname") String nickname, 
     @RequestParam("chat_id") Long chatId){
         User user = userRepo.findByNickname(nickname);
@@ -146,7 +146,7 @@ public class ServerController{
         return null;
     }
 
-    @RequestMapping(value="/chat/addusers", method=RequestMethod.GET)
+    @RequestMapping(value="/logged/chat/addusers", method=RequestMethod.GET)
     public Chat addUsersToChat(@RequestParam("users_nicknames") List<String> usersNicknames, @RequestParam("chat_id") Long idChat){
         Chat chat = chatRepo.findById(idChat).get();
         List<User> chatUsers = new ArrayList<User>();
