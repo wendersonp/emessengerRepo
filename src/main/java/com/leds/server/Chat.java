@@ -22,7 +22,7 @@ public class Chat{
     @Column(nullable = false, columnDefinition = "VARCHAR(45)")
     private String subject;
 
-    @Column(nullable = false, columnDefinition = "DATETIME")
+    @Column(nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime lastUpdate;
 
     @ManyToMany

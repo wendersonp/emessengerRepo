@@ -19,7 +19,7 @@ public class Message{
     @Column(columnDefinition = "INT")
     private long idMessage;
 
-    @Column(nullable = false, columnDefinition = "DATETIME")
+    @Column(nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime sentTime;
 
     @Column(nullable = false, columnDefinition = "TEXT")

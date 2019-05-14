@@ -24,13 +24,15 @@ public class ServerController{
     MessageRepository messageRepo;
     
     @RequestMapping(value = "/user/signup", method = RequestMethod.POST)
-    public User userSignUp(@RequestParam("name") String name, 
+    public String userSignUp(@RequestParam("name") String name, 
     @RequestParam("nickname") String nickname,
     @RequestParam("password") String password){
         User user = new User(name, nickname, password);
         userRepo.save(user);
-        return user;
+        return "Signup Success";
     } 
+
+
 
     @RequestMapping(value = "/user/login", method = RequestMethod.PUT)
 
@@ -45,6 +47,12 @@ public class ServerController{
         else{
             return "Login Error";
         }
+    }
+
+    @RequestMapping(value = "/logged/user/get", method = RequestMethod.GET)
+    public User getUser(@RequestParam("nickname") String nickname){
+        User user = userRepo.findByNickname(nickname);
+        return user;
     }
 
     @RequestMapping(value = "/user/logout", method = RequestMethod.PUT)

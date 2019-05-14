@@ -4,8 +4,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "client")
 public class User{
 
     @Id //Chave-Primaria
@@ -22,7 +24,7 @@ public class User{
     @Column(nullable = false, columnDefinition = "VARCHAR(40)")
     private String password;
 
-    @Column(nullable = false, columnDefinition = "BIT")
+    @Column(nullable = false, columnDefinition = "BOOLEAN")
     private Boolean loggedIn = false;
 
     protected User(){}
