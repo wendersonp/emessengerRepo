@@ -1,6 +1,7 @@
 package com.leds.server;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,22 +60,41 @@ public class ServerController{
         }
     }
 
-    @RequestMapping(value = "/chat/create", method = RequestMethod.POST)
-    public Chat chatCreate(@RequestParam("subject") String subject, @RequestParam("creator_nickname") String creatorNickname, 
-    @RequestParam("destination_nickname") String destinationNickname){
-        User user0 = userRepo.findByNickname(creatorNickname);
-        User user1 = userRepo.findByNickname(destinationNickname);
+    @RequestMapping(value = "/logged/chat/create", method = RequestMethod.POST)
+    public Chat chatCreate(@RequestParam("subject") String subject, @RequestParam("users_nicknames") List<String> usersNicknames){
+        
+        List<User> userList = new ArrayList<User>();
+        Boolean firstUserRegistrated = false;
+
+        for (String userNickname  : usersNicknames) {
+            User user = userRepo.findByNickname(userNickname);
+            if(user != null){
+                if(firstUserRegistrated == false){
+                    if(user.getLoggedIn() == true){
+                        userList.add(user);
+                        firstUserRegistrated = true;
+                    }
+                    else{
+                        System.out.println("User not logged in");
+                        return null;
+                    }
+                }
+                else{
+                    userList.add(user);
+                }
+            }
+        }
 
 
-        if(user0 != null && user1 != null && user0.getLoggedIn() == true){
-           Chat chat = new Chat(subject, LocalDateTime.now(), user0, user1);
+        if(userList.size() > 1){
+           Chat chat = new Chat(subject, LocalDateTime.now(), userList);
            chatRepo.save(chat);
            return chat;
         }
         return null;
     }
 
-    @RequestMapping(value = "/chat/getlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/logged/chat/getlist", method = RequestMethod.GET)
     public List<Chat> chatList(@RequestParam("nickname") String nickname){
         User user = userRepo.findByNickname(nickname);
         if(user != null && user.getLoggedIn() == true){
@@ -84,7 +104,7 @@ public class ServerController{
         return null;
     }
 
-    @RequestMapping(value = "/message/send", method = RequestMethod.POST)
+    @RequestMapping(value = "/logged/message/send", method = RequestMethod.POST)
     public Message sendMessage(@RequestParam("sender_nickname") String senderNickname,
     @RequestParam("chat_id") Long chatId,
     @RequestParam("text_message") String textMessage){
@@ -93,10 +113,19 @@ public class ServerController{
         User senderUser = userRepo.findByNickname(senderNickname);
 
         if(senderUser != null && senderUser.getLoggedIn() == true){
-            if(senderUser.getIdUser() == chat.getUser0().getIdUser() || senderUser.getIdUser() == chat.getUser1().getIdUser()){
+            Boolean senderInChat = false;
+            for(User user: chat.getUsers()){
+                if(user.getIdUser() == senderUser.getIdUser()){
+                    senderInChat = true;
+                }
+            }
+
+            if(senderInChat){
                 LocalDateTime updateTime = LocalDateTime.now();
-                Message message = new Message(updateTime, textMessage, senderUser, chat);
+
+                Message message = new Message(updateTime, textMessage, senderUser, chat, chat.getUsers());
                 messageRepo.save(message);
+                
                 chat.setLastUpdate(updateTime);
                 chatRepo.save(chat);
                 return message;
@@ -106,19 +135,33 @@ public class ServerController{
         return null;
     }
     
-    @RequestMapping(value = "/message/getlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/logged/message/getlist", method = RequestMethod.GET)
     public List<Message> getChatMessages(@RequestParam("nickname") String nickname, 
     @RequestParam("chat_id") Long chatId){
         User user = userRepo.findByNickname(nickname);
         
         if(user != null && user.getLoggedIn() == true){
-            Chat chat = chatRepo.findById(chatId).get();
-            if(chat.getUser0().getNickname().equals(nickname) || chat.getUser1().getNickname().equals(nickname)){
-                return messageRepo.findByChatFrOrderBySentTimeDesc(chat);
-            }
+            return messageRepo.getUserMessages(user.getIdUser(), chatId);
         }
         return null;
     }
+
+    @RequestMapping(value="/logged/chat/addusers", method=RequestMethod.GET)
+    public Chat addUsersToChat(@RequestParam("users_nicknames") List<String> usersNicknames, @RequestParam("chat_id") Long idChat){
+        Chat chat = chatRepo.findById(idChat).get();
+        List<User> chatUsers = new ArrayList<User>();
+        chatUsers.addAll(chat.getUsers());
+        for(String nickname: usersNicknames){
+            User user = userRepo.findByNickname(nickname);
+            if(user != null){
+                chatUsers.add(user);
+            }
+        }
+        chat.setUsers(chatUsers);
+        chatRepo.save(chat);
+        return chat;
+    }
+    
 
     /*@RequestMapping("/secured")
     public String secured(){

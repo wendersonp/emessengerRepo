@@ -1,11 +1,15 @@
 package com.leds.server;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -27,11 +31,16 @@ public class Message{
     @ManyToOne
     private Chat chatFr;
 
-    public Message (LocalDateTime sentTime, String textMessage, User senderUser, Chat chatFr){
+    @ManyToMany
+    @JoinTable(name = "MessageUser")
+    private List<User> receiverList = new ArrayList<>();
+
+    public Message (LocalDateTime sentTime, String textMessage, User senderUser, Chat chatFr, List<User> receiverList){
         this.sentTime = sentTime;
         this.textMessage = textMessage;
         this.senderUser = senderUser;
         this.chatFr = chatFr;
+        this.receiverList.addAll(receiverList);
     }
 
     protected Message (){}
@@ -104,5 +113,20 @@ public class Message{
      */
     public void setChatFr(Chat chatFr) {
         this.chatFr = chatFr;
+    }
+
+    /**
+     * @return the receiverList
+     */
+    public List<User> getReceiverList() {
+        return receiverList;
+    }
+
+    /**
+     * @param receiverList the receiverList to set
+     */
+    public void setReceiverList(List<User> receiverList){
+        this.receiverList.clear();
+        this.receiverList.addAll(receiverList); 
     }
 }
