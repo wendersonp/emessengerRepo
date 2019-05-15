@@ -1,5 +1,9 @@
 package com.leds.server;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +22,16 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableResourceServer
 @EnableWebSecurity
 public class ConfigSecurity extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private DataSource dataBase;
+
+    @Value("${spring.queries.users-query}")
+    private String usersQuery;
+
+    @Value("${spring.queries.roles-query}")
+    private String rolesQuery;
+
     @Bean
     @Override
     protected AuthenticationManager authenticationManager() throws Exception {
@@ -37,7 +51,13 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("emsgserver").password("leds123").roles("ADMIN");
+        //auth.inMemoryAuthentication().withUser("emsgserver").password("leds123").roles("ADMIN");
+        auth.
+            jdbcAuthentication()
+            .usersByUsernameQuery(usersQuery)
+            .authoritiesByUsernameQuery(rolesQuery)
+            .dataSource(dataBase)
+            .passwordEncoder(passwordEncoder());
     } 
 
     @Bean

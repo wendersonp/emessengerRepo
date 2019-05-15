@@ -27,6 +27,8 @@ public class User{
     @Column(nullable = false, columnDefinition = "BOOLEAN")
     private Boolean loggedIn = false;
 
+    private int active = 1;
+
     protected User(){}
 
     public User(String name, String nickname, String password){

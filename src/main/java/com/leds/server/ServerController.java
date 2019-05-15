@@ -171,6 +171,8 @@ public class ServerController{
     }
     
 
+    
+
     /*@RequestMapping("/secured")
     public String secured(){
         return "Utilizando HTTPS = OK";
