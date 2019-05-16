@@ -21,7 +21,7 @@ public class User{
     @Column(nullable = false, unique = true, columnDefinition = "VARCHAR(40)")
     private String nickname;
 
-    @Column(nullable = false, columnDefinition = "VARCHAR(40)")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String password;
 
     @Column(nullable = true, columnDefinition = "VARCHAR(60)")
