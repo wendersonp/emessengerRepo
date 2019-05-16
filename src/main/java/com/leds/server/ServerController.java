@@ -7,6 +7,7 @@ import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +29,17 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class ServerController{
+    
+    @Bean
+    public TokenStore tokenStore() {
+        return new InMemoryTokenStore();
+    }
 
     @Autowired
     Environment environment;
+
+    @Autowired
+    private TokenStore tokenStore;
     
     @Autowired
     UserRepository userRepo;
@@ -37,6 +49,7 @@ public class ServerController{
 
     @Autowired
     MessageRepository messageRepo;
+
     
     @RequestMapping(value = "/user/signup", method = RequestMethod.POST)
     public String userSignUp(@RequestParam("name") String name, 
@@ -115,6 +128,9 @@ public class ServerController{
         User user = userRepo.findByNickname(nickname);
 
         if(!(user == null) && user.getAccessToken() != null){
+            OAuth2AccessToken accessToken = tokenStore.readAccessToken(user.getAccessToken());
+            tokenStore.removeAccessToken(accessToken);
+
             user.setAccessToken(null);
             userRepo.save(user);
 
