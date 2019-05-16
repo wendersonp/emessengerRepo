@@ -201,7 +201,7 @@ public class ServerController{
         return null;
     }
 
-    @RequestMapping(value="/secured/chat/addusers", method=RequestMethod.GET)
+    @RequestMapping(value="/secured/chat/addusers", method=RequestMethod.PUT)
     public Chat addUsersToChat(@RequestParam("users_nicknames") List<String> usersNicknames, @RequestParam("chat_id") Long idChat){
         Chat chat = chatRepo.findById(idChat).get();
         List<User> chatUsers = new ArrayList<User>();
