@@ -40,15 +40,11 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/user/**");
+        web.ignoring().antMatchers("/user/login");
+        web.ignoring().antMatchers("/user/logout");
+        web.ignoring().antMatchers("/user/signup");
     }
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/").permitAll().antMatchers("/secured/**")
-            .hasAnyRole("ADMIN").anyRequest().authenticated().and().formLogin()
-            .permitAll().and().logout().permitAll();
-        http.csrf().disable();
-    }
+    
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         //auth.inMemoryAuthentication().withUser("emsgserver").password("leds123").roles("ADMIN");

@@ -66,7 +66,7 @@ Em resumo:
 
 - Função: Resgata os dados de um Usuário, dado o nickname
 - Tipo de Requisição HTTP: GET
-- Endereço: /secured/user/get
+- Endereço: /user/get
 - Parâmetros:
     - nickname: Identificação única do usuário
 - Retorno: .JSON do usuário requisitado
@@ -84,7 +84,7 @@ Em resumo:
 
 - Função: Cria um chat entre usuários no banco de dados
 - Tipo de Requisição HTTP: POST
-- Endereço: /secured/chat/create
+- Endereço: /chat/create
 - Parâmetros:
     - subject: Assunto do chat a criar
     - users_nicknames: lista de identificação dos usuários criados, o anfitrião (o que esta querendo criar o chat) deve ser o primeiro da lista. 
@@ -95,7 +95,7 @@ Em resumo:
 
 - Função: Resgata a lista de chats em que um usuário esteja participando, ordenadas por data de última atualização
 - Tipo de Requisição HTTP: GET
-- Endereço: /secured/chat/getlist
+- Endereço: /chat/getlist
 - Parâmetros:
     - nickname: Identificação única do usuário
 - Retorno: .JSON com lista de chats em que o usuário participa
@@ -104,7 +104,7 @@ Em resumo:
 
 - Função: Cria uma mensagem associada a um chat e o usuário que a gerou
 - Tipo de Requisição HTTP: POST
-- Endereço: /secured/message/send
+- Endereço: /message/send
 - Parâmetros:
     - sender_nickname: Identificação única do usuário que envia a mensagem
     - chat_id: Número de identificação do chat no banco de dados
@@ -115,7 +115,7 @@ Em resumo:
 
 - Função: Resgata lista de mensagens associadas a um chat, ordenadas por data de envio
 - Tipo de Requisição HTTP: GET
-- Endereço: /secured/message/getlist
+- Endereço: /message/getlist
 - Parâmetros:
     - nickname: Identificação única do usuário
     - chat_id: Número de identificação do chat no banco de dados
@@ -125,7 +125,7 @@ Em resumo:
 
 - Função: Adiciona mais usuários a um determinado chat
 - Tipo de Requisição HTTP: PUT
-- Endereço: /secured/chat/addusers
+- Endereço: /chat/addusers
 - Parâmetros:
     - users_nicknames: Lista de Identificação dos usuários
     - chat_id: Número de identificação do chat no banco de dados
