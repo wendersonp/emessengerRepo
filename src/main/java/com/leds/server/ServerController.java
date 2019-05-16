@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,22 +40,27 @@ public class ServerController{
     
     @RequestMapping(value = "/user/signup", method = RequestMethod.POST)
     public String userSignUp(@RequestParam("name") String name, 
-    @RequestParam("nickname") String nickname,
-    @RequestParam("password") String password){
+                             @RequestParam("nickname") String nickname,
+                             @RequestParam("password") String password){
+        
+        String salt = BCrypt.gensalt();
+        password = BCrypt.hashpw(password, salt);
+        
         User user = new User(name, nickname, password);
         userRepo.save(user);
+
         return "Signup Success";
     } 
 
 
 
     @RequestMapping(value = "/user/login", method = RequestMethod.PUT)
-
     public String userLogin(@RequestParam("nickname") String nickname,
-    @RequestParam("password") String password){
-        User user = userRepo.findByNickname(nickname);
-        if(!(user == null) && user.getPassword().equals(password)){
+                            @RequestParam("password") String password){
 
+        User user = userRepo.findByNickname(nickname);
+       
+        if(!(user == null) && BCrypt.checkpw(password, user.getPassword())){
             //Enviando um request a /oauth/token
             String port = environment.getProperty("local.server.port");
             final String url = "http://localhost:" + port + "/oauth/token";
@@ -76,15 +82,14 @@ public class ServerController{
             body.add("password", user.getPassword());
             HttpEntity<?> entity = new HttpEntity<Object>(body, header);
 
-
             ResponseEntity<TokenWrapper> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, TokenWrapper.class);
             
-
             TokenWrapper token = responseEntity.getBody();
 
             if(token.access_token != null){
                 user.setAccessToken(token.access_token);
                 userRepo.save(user);
+
                 return token.access_token;
             }
             else {
@@ -96,18 +101,23 @@ public class ServerController{
         }
     }
 
-    @RequestMapping(value = "/secured/user/get", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/get", method = RequestMethod.GET)
     public User getUser(@RequestParam("nickname") String nickname){
+
         User user = userRepo.findByNickname(nickname);
+
         return user;
     }
 
     @RequestMapping(value = "/user/logout", method = RequestMethod.PUT)
     public String userLogout(@RequestParam("nickname") String nickname){
+
         User user = userRepo.findByNickname(nickname);
+
         if(!(user == null) && user.getAccessToken() != null){
             user.setAccessToken(null);
             userRepo.save(user);
+
             return "Logout Success";
         }
         else{
@@ -115,14 +125,16 @@ public class ServerController{
         }
     }
 
-    @RequestMapping(value = "/secured/chat/create", method = RequestMethod.POST)
-    public Chat chatCreate(@RequestParam("subject") String subject, @RequestParam("users_nicknames") List<String> usersNicknames){
+    @RequestMapping(value = "/chat/create", method = RequestMethod.POST)
+    public Chat chatCreate(@RequestParam("subject") String subject, 
+                           @RequestParam("users_nicknames") List<String> usersNicknames){
         
         List<User> userList = new ArrayList<User>();
         Boolean firstUserRegistrated = false;
 
         for (String userNickname  : usersNicknames) {
             User user = userRepo.findByNickname(userNickname);
+
             if(user != null){
                 if(firstUserRegistrated == false){
                     if(user.getAccessToken() != null){
@@ -131,6 +143,7 @@ public class ServerController{
                     }
                     else{
                         System.out.println("User not logged in");
+
                         return null;
                     }
                 }
@@ -140,29 +153,34 @@ public class ServerController{
             }
         }
 
-
         if(userList.size() > 1){
            Chat chat = new Chat(subject, LocalDateTime.now(), userList);
            chatRepo.save(chat);
+
            return chat;
         }
+
         return null;
     }
 
-    @RequestMapping(value = "/secured/chat/getlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/chat/getlist", method = RequestMethod.GET)
     public List<Chat> chatList(@RequestParam("nickname") String nickname){
+
         User user = userRepo.findByNickname(nickname);
+
         if(user != null && user.getAccessToken() != null){
             List<Chat> chatList = chatRepo.findByUsers(user.getIdUser());
+
             return chatList;
         }
+
         return null;
     }
 
-    @RequestMapping(value = "/secured/message/send", method = RequestMethod.POST)
+    @RequestMapping(value = "/message/send", method = RequestMethod.POST)
     public Message sendMessage(@RequestParam("sender_nickname") String senderNickname,
-    @RequestParam("chat_id") Long chatId,
-    @RequestParam("text_message") String textMessage){
+                               @RequestParam("chat_id") Long chatId,
+                               @RequestParam("text_message") String textMessage){
 
         Chat chat = chatRepo.findById(chatId).get();
         User senderUser = userRepo.findByNickname(senderNickname);
@@ -183,43 +201,50 @@ public class ServerController{
                 
                 chat.setLastUpdate(updateTime);
                 chatRepo.save(chat);
+
                 return message;
             }
+
             return null;
         }
+
         return null;
     }
     
-    @RequestMapping(value = "/secured/message/getlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/message/getlist", method = RequestMethod.GET)
     public List<Message> getChatMessages(@RequestParam("nickname") String nickname, 
-    @RequestParam("chat_id") Long chatId){
+                                         @RequestParam("chat_id") Long chatId){
+
         User user = userRepo.findByNickname(nickname);
         
         if(user != null && user.getAccessToken() != null){
             return messageRepo.getUserMessages(user.getIdUser(), chatId);
         }
+
         return null;
     }
 
-    @RequestMapping(value="/secured/chat/addusers", method=RequestMethod.PUT)
-    public Chat addUsersToChat(@RequestParam("users_nicknames") List<String> usersNicknames, @RequestParam("chat_id") Long idChat){
+    @RequestMapping(value="/chat/addusers", method=RequestMethod.PUT)
+    public Chat addUsersToChat(@RequestParam("users_nicknames") List<String> usersNicknames, 
+                               @RequestParam("chat_id") Long idChat){
+
         Chat chat = chatRepo.findById(idChat).get();
         List<User> chatUsers = new ArrayList<User>();
         chatUsers.addAll(chat.getUsers());
+
         for(String nickname: usersNicknames){
             User user = userRepo.findByNickname(nickname);
             if(user != null){
                 chatUsers.add(user);
             }
         }
+
         chat.setUsers(chatUsers);
         chatRepo.save(chat);
+
         return chat;
     }
     
-
-    
-
     /*@RequestMapping("/secured")
     public String secured(){
         return "Utilizando HTTPS = OK";
