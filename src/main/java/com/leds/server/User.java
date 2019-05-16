@@ -24,8 +24,8 @@ public class User{
     @Column(nullable = false, columnDefinition = "VARCHAR(40)")
     private String password;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN")
-    private Boolean loggedIn = false;
+    @Column(nullable = true, columnDefinition = "VARCHAR(60)")
+    private String accessToken = null;
 
     private int active = 1;
 
@@ -93,19 +93,18 @@ public class User{
     }
 
     /**
-     * @return the loggedIn
+     * @return the accessToken
      */
-    public Boolean getLoggedIn() {
-        return loggedIn;
+    public String getAccessToken() {
+        return accessToken;
     }
 
     /**
-     * @param loggedIn the loggedIn to set
+     * @param accessToken the accessToken to set
      */
-    public void setLoggedIn(Boolean loggedIn) {
-        this.loggedIn = loggedIn;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
-
     
 
 
