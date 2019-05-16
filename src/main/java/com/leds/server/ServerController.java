@@ -53,7 +53,7 @@ public class ServerController{
         if(!(user == null) && user.getPassword().equals(password)){
 
             //Enviando um request a /oauth/token
-           /* final String url = "http://localhost:8080/oauth/token";
+            final String url = "http://localhost:8080/oauth/token";
 
             RestTemplate restTemplate = new RestTemplate();
 
@@ -73,24 +73,19 @@ public class ServerController{
             HttpEntity<?> entity = new HttpEntity<Object>(body, header);
 
 
-            ResponseEntity<MultiValueMap<String, String>> responseEntity = 
-                restTemplate.exchange(url, 
-                                  HttpMethod.POST,
-                                  entity, 
-                                  new ParameterizedTypeReference<MultiValueMap<String, String>>(){});
+            ResponseEntity<TokenWrapper> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, TokenWrapper.class);
             
 
-            MultiValueMap<String, String> responseBody = responseEntity.getBody();
+            TokenWrapper token = responseEntity.getBody();
 
-            if(responseBody.containsKey("access_token")){
-                user.setAccessToken(responseBody.getFirst("access_token"));
+            if(token.access_token != null){
+                user.setAccessToken(token.access_token);
                 userRepo.save(user);
-                return responseBody.getFirst("access_token");
+                return token.access_token;
             }
             else {
                 return "Login Error";
-            } */
-            return "Test";
+            } 
         }
         else{
             return "Login Error";
