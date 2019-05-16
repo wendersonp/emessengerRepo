@@ -44,7 +44,7 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/").permitAll().antMatchers("/logged/**")
+        http.authorizeRequests().antMatchers("/").permitAll().antMatchers("/secured/**")
             .hasAnyRole("ADMIN").anyRequest().authenticated().and().formLogin()
             .permitAll().and().logout().permitAll();
         http.csrf().disable();

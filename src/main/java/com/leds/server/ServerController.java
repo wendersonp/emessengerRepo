@@ -92,7 +92,7 @@ public class ServerController{
         }
     }
 
-    @RequestMapping(value = "/logged/user/get", method = RequestMethod.GET)
+    @RequestMapping(value = "/secured/user/get", method = RequestMethod.GET)
     public User getUser(@RequestParam("nickname") String nickname){
         User user = userRepo.findByNickname(nickname);
         return user;
@@ -111,7 +111,7 @@ public class ServerController{
         }
     }
 
-    @RequestMapping(value = "/logged/chat/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/secured/chat/create", method = RequestMethod.POST)
     public Chat chatCreate(@RequestParam("subject") String subject, @RequestParam("users_nicknames") List<String> usersNicknames){
         
         List<User> userList = new ArrayList<User>();
@@ -145,7 +145,7 @@ public class ServerController{
         return null;
     }
 
-    @RequestMapping(value = "/logged/chat/getlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/secured/chat/getlist", method = RequestMethod.GET)
     public List<Chat> chatList(@RequestParam("nickname") String nickname){
         User user = userRepo.findByNickname(nickname);
         if(user != null && user.getAccessToken() != null){
@@ -155,7 +155,7 @@ public class ServerController{
         return null;
     }
 
-    @RequestMapping(value = "/logged/message/send", method = RequestMethod.POST)
+    @RequestMapping(value = "/secured/message/send", method = RequestMethod.POST)
     public Message sendMessage(@RequestParam("sender_nickname") String senderNickname,
     @RequestParam("chat_id") Long chatId,
     @RequestParam("text_message") String textMessage){
@@ -186,7 +186,7 @@ public class ServerController{
         return null;
     }
     
-    @RequestMapping(value = "/logged/message/getlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/secured/message/getlist", method = RequestMethod.GET)
     public List<Message> getChatMessages(@RequestParam("nickname") String nickname, 
     @RequestParam("chat_id") Long chatId){
         User user = userRepo.findByNickname(nickname);
@@ -197,7 +197,7 @@ public class ServerController{
         return null;
     }
 
-    @RequestMapping(value="/logged/chat/addusers", method=RequestMethod.GET)
+    @RequestMapping(value="/secured/chat/addusers", method=RequestMethod.GET)
     public Chat addUsersToChat(@RequestParam("users_nicknames") List<String> usersNicknames, @RequestParam("chat_id") Long idChat){
         Chat chat = chatRepo.findById(idChat).get();
         List<User> chatUsers = new ArrayList<User>();
