@@ -7,7 +7,7 @@ import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,6 +24,9 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class ServerController{
+
+    @Autowired
+    Environment environment;
     
     @Autowired
     UserRepository userRepo;
@@ -53,7 +56,8 @@ public class ServerController{
         if(!(user == null) && user.getPassword().equals(password)){
 
             //Enviando um request a /oauth/token
-            final String url = "http://localhost:8080/oauth/token";
+            String port = environment.getProperty("local.server.port");
+            final String url = "http://localhost:" + port + "/oauth/token";
 
             RestTemplate restTemplate = new RestTemplate();
 
