@@ -20,6 +20,7 @@ Em resumo:
 
 ## Obter Token de acesso
 
+- OBS.: Com a nova versão do login, não é mais necessário requisitar token externamente
 - Requisita um token de acesso ao servidor
 - Tipo de Requisição HTTP: POST
 - Endereço: /oauth/token
@@ -33,6 +34,7 @@ Em resumo:
 - Retorno: .JSON com o token, copiar o atributo access_token
 - Em todas as outras requisições, escrever no header o parâmetro:
     -Authorization = <token_type> <access_token>
+    - OBS.: <token_type> é normalmente igual a "Bearer" (sem aspas)
 
 
 ## Requisições suportadas pelo servidor
