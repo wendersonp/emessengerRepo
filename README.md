@@ -130,6 +130,6 @@ Em resumo:
 - Função: Remover o token do banco de dados quando ele expirar
 - Tipo de Requisição HTTP: PUT
 - Endereço: /remove/token
-- Parâmtreos:
+- Parâmetros:
     - nickname: Identificação única do usuário
 - Retorno: success
