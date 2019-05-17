@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class ServerController{
-    
+
     @Bean
     public TokenStore tokenStore() {
         return new InMemoryTokenStore();
@@ -260,10 +260,17 @@ public class ServerController{
 
         return chat;
     }
+
+    @RequestMapping(value="/remove/token", method=RequestMethod.PUT)
+    public String removeToken(@RequestParam("nickname") String nickname) {
+        
+        User user = userRepo.findByNickname(nickname);
+        user.setAccessToken(null);
+        userRepo.save(user);
+
+        return "success";
+
+    }
     
-    /*@RequestMapping("/secured")
-    public String secured(){
-        return "Utilizando HTTPS = OK";
-    }*/
 
 } 

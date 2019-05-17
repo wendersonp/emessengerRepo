@@ -1,11 +1,5 @@
 ## emessengerRepo
 
-## Instruções para obter o certificado SSL 
-- Execute o comando no terminal: keytool -genkey -alias tomcat
-
-## Instruções para criar o certificado SSL 
-- Obs: o certificado já se encontra no diretório server/src/main/resources com o nome keystore.p12.
-- Execute o comando no terminal: keytool -genkey -alias tomcat -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 - validity 3650
 
 ## Instruções para configurar o banco de dados
 
@@ -130,3 +124,12 @@ Em resumo:
     - users_nicknames: Lista de Identificação dos usuários
     - chat_id: Número de identificação do chat no banco de dados
 - Retorno: .JSON do chat alterado
+
+### Remover token do banco de dados ao expirar
+
+- Função: Remover o token do banco de dados quando ele expirar
+- Tipo de Requisição HTTP: PUT
+- Endereço: /remove/token
+- Parâmtreos:
+    - nickname: Identificação única do usuário
+- Retorno: success
