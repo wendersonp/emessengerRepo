@@ -11,7 +11,7 @@ class Chat {
 
   Chat(this._to, this._from, this._subject, this._messages, this._date, this._message) {
 
-    Message m = Message(this, _to, _from, _message, _date);
+    //Message m = Message(this, _to, _from, _message, _date);
     _from.addChat(this);
     _to.addChat(this);
   }

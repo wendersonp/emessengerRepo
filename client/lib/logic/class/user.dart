@@ -2,7 +2,7 @@ import './chat.dart';
 
 
 class User {
-  String _name="";
+  //String _name="";
   String _nickname="";
   String _password="";
   String _creationDate;
@@ -10,7 +10,7 @@ class User {
   static User _instance;
   
   //User(this._name, this._nickname, this._password, this._creationDate, this._chats);
-  _User(){}
+  //_User(){}
   
   static User getInstance(){
     if(_instance== null){
@@ -50,7 +50,7 @@ class User {
   setAll(String username, String pass, String name){
     setusername(username);
     setpassword(pass);
-    _name=name;
+    //_name=name;
   }
 
   Map<String, dynamic> toMap() {

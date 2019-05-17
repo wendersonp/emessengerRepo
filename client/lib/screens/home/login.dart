@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import '../emails.dart';
 import '../../models/user.dart';
 
-import 'dart:io';
-import 'package:http/io_client.dart';
-import 'dart:convert' as JSON;
+import 'package:messenger_app/logic/facade_http.dart';
 // import 'package:http/http.dart' as http;
 // import 'dart:async';
 // import 'package:async/async.dart';
-// import 'package:dio/dio.dart';
+// import 'package:dio/dio.dart';,
 
 class LoginPage extends StatefulWidget {
 
@@ -164,12 +162,12 @@ class _LoginPageStates extends State<LoginPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25.0)),
                             onPressed: () {
-                              submitLoginNoServer();
-                              //submitLogin();
-                              //Navigator.pushReplacement(context,
-                                 // MaterialPageRoute(
-                                    //  builder: (BuildContext context) =>
-                                     //     Emails()));
+                              FacadeHttp facade = FacadeHttp.getIntance();
+                             
+                              facade.submitLogin(_userControllerLogin.text, _passwordControllerLogin.text);
+                                
+
+                              
                             },
 
                           )
@@ -267,9 +265,11 @@ class _LoginPageStates extends State<LoginPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25.0)),
                             onPressed: () {
-                              //submitSign();
+                              FacadeHttp facade = FacadeHttp.getIntance();
+                             
+                              facade.submitSign(_userdControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text);
+                                
                             },
-
                           )
                       )
                   ),
@@ -280,120 +280,8 @@ class _LoginPageStates extends State<LoginPage> {
     );
   }
 
-  void submitLogin() async {
-    
-    if (_userControllerLogin.text.isNotEmpty &&
-        _passwordControllerLogin.text.isNotEmpty) {
 
-      HttpClient httpClient = new HttpClient()
-        ..badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
-          print("CERTIFICADO HTTP");
-          // tests that cert is self signed, correct subject and correct date(s)
-          return true;
-        });
-
-      IOClient ioClient = new IOClient(httpClient);
-      var urlLogin = 'https://192.168.0.39:8443/user/login';
-
-      var login = Map<String, dynamic>();
-  
-      login['nickname'] = _userControllerLogin.text;
-      login['password'] = _passwordControllerLogin.text;
-
-      ioClient
-          .put(urlLogin,
-          headers: {"Accept": "application/json"},
-          body: login)
-          .then((response) {
-        print("Login:");
-        print('Response: ${response.statusCode}  Body:${response.body} ');
-
-        Map result = JSON.jsonDecode(response.body);
-        print("Map:   ${result["name"]}");
-        print("Map:   ${result["nickname"]}");
-        //User newUser = User(result['name'], result['nickname'], []);
-
-        if( response.body.isNotEmpty ) {
-          debugPrint("usuario logado");
-          //debugPrint(newUser.nickname);
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (BuildContext context) =>
-          //       //Emails(result['name'], result['nickname'])
-          //       ));
-            }
-          }
-        )
-          .catchError((err) {
-            print(err.toString());
-            print('deu ruim');
-      });
-    }
-  }
-
-   void submitSign() async {
-    if (_userdControllerSign.text.isNotEmpty &&
-        _passwordControllerSign.text.isNotEmpty) {
-
-
-      HttpClient httpClient = new HttpClient()
-        ..badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
-          print("CERTIFICADO HTTP");
-          // tests that cert is self signed, correct subject and correct date(s)
-          return true;
-        });
-
-      IOClient ioClient = new IOClient(httpClient);
-      var urlSignUp = 'https://192.168.0.39:8443/user/signup';
-
-      var signUp = Map<String, dynamic>();
-    
-      signUp['name'] = _nameControllerSign.text;
-      signUp['nickname'] = _userdControllerSign.text;
-      signUp['password'] = _passwordControllerSign.text;
-
-      print("clicked");
-      ioClient
-          .post(
-            urlSignUp,
-            headers: {"Accept": "application/json"},
-            body: signUp)
-          .then((response) {
-            print("Signup:");
-            print('Response: ${response.statusCode}  Body:${response.body} ');
-
-            Map result = JSON.jsonDecode(response.body);
-            print("Map:   ${result["name"]}");
-            print("Map:   ${result["nickname"]}");
-
-            // if(result['loggedIn'] && false) {
-            //   User newUser = (result["name"], result['nickname'], []);
-            //   Navigator.pushReplacement(context,
-            //     MaterialPageRoute(builder: (BuildContext context) => Emails(newUser)));
-            // }
-
-
-        })
-          .catchError((err) {
-        print(err.toString());
-        print('Não funcionou');
-            //ioClient.close();
-
-      });
-
-      // User newUser = User( "A", _userdControllerSign.text, _passwordControllerSign.text,
-      //     DateTime.now().toString(), []);
-      // Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (BuildContext context) => Emails(newUser)));
-    }
-  }
-
-  submitLoginNoServer() {
+  submitLoginSemServer() {
     if( _userControllerLogin.text.isNotEmpty ) {
       debugPrint("usuario logado");
       //debugPrint(newUser.nickname);

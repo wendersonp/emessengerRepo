@@ -5,7 +5,7 @@ import '../models/chat.dart';
 import './messages.dart';
 import '../models/user.dart';
 
-import 'dart:async';
+//import 'dart:async';
 import 'dart:io';
 import 'package:http/io_client.dart';
 import 'dart:convert' as JSON;
