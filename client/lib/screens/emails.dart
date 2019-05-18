@@ -9,7 +9,7 @@ import '../models/user.dart';
 import 'dart:io';
 import 'package:http/io_client.dart';
 import 'dart:convert' as JSON;
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
 
 
 
@@ -73,7 +73,7 @@ class _EmailsState extends State<Emails> {
                 padding: EdgeInsets.only(top: 40.0),
                 child: CircleAvatar(
                   radius: 40.0,
-                  child: Text("C"),
+                  child: Text(_currentUserState.name..substring(0,1)),
                 ),
               ),
               Padding(
@@ -157,19 +157,20 @@ class _EmailsState extends State<Emails> {
       itemBuilder: (BuildContext context, int position) {
         
         String to = _currentUserState.chats[position].to.nickname;
-        String date = _currentUserState.chats[position].date;
+        //String date = _currentUserState.chats[position].date;
+        String sub = _currentUserState.chats[position].subject;
         return Card(
           color: Colors.white,
           elevation: 2.0,
           child: ListTile(
             //leading: Text(to.substring(0,1)),
-            leading: Text("${to.substring(0,1)}"),
+            leading: Text("${sub.substring(0,1)}"),
             title: Text("$to ${_currentUserState.chats[position].date} ", 
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 ),
               ),
-            subtitle: Text("${_currentUserState.chats[position].subject}"),
+            subtitle: Text("$sub"),
             onTap: () {
               Navigator.push(context,
               MaterialPageRoute(

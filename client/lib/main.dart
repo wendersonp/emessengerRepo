@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import './screens/emails.dart';
 import './screens/home/login.dart';
 
 void main() => runApp(MyApp());

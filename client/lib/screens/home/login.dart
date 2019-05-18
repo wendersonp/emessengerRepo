@@ -161,12 +161,10 @@ class _LoginPageStates extends State<LoginPage> {
                             child: Text('Login'),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25.0)),
-                            onPressed: () {
+                            onPressed: ()  {
                               FacadeHttp facade = FacadeHttp.getIntance();
-                             
-                              facade.submitLogin(_userControllerLogin.text, _passwordControllerLogin.text);
-                                
 
+                              facade.submitLogin(_userControllerLogin.text, _passwordControllerLogin.text, context);
                               
                             },
 
@@ -264,7 +262,7 @@ class _LoginPageStates extends State<LoginPage> {
                             child: Text('Criar conta'),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25.0)),
-                            onPressed: () {
+                            onPressed: () async {
                               FacadeHttp facade = FacadeHttp.getIntance();
                              
                               facade.submitSign(_userdControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text);
@@ -289,7 +287,7 @@ class _LoginPageStates extends State<LoginPage> {
         context,
         MaterialPageRoute(
           builder: (BuildContext context) =>
-            Emails(User(_userControllerLogin.text, _userControllerLogin.text, []))));
+            Emails(User(555,"test","test","test", []))));
     }
   }
 }

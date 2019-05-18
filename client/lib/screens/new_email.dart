@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:http/io_client.dart';
 import 'dart:convert' as JSON;
@@ -148,8 +147,8 @@ class _NewEmailState extends State<NewEmail> {
   }
 
   void sendEmail(String to , String subject, String message) {
-    var dateNow = DateTime.now();
-    var formater = DateFormat('yyyy-MM-dd hh:mm');
+    //var dateNow = DateTime.now();
+    //var formater = DateFormat('yyyy-MM-dd hh:mm');
     //var date = formater.format(dateNow);
     var date = DateFormat.Hm().format(DateTime.now()).toString();
     debugPrint("to: $to, subject: $subject, message: $message, date: ${DateFormat.Hm().format(DateTime.now()).toString()} ");
