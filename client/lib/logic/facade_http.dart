@@ -6,8 +6,8 @@ import 'dart:io';
 //import 'package:messenger_app/logic/class/user.dart';
 import 'package:http/io_client.dart';
 
-import '../screens/emails.dart';
-import '../models/user.dart';
+import 'package:messenger_app/screens/emails.dart';
+import 'package:messenger_app/models/user.dart';
 
 import 'class/chat.dart';
 import 'package:messenger_app/screens/home/login.dart';
@@ -106,12 +106,12 @@ class FacadeHttp{
     }
   }
 
-  void submitSign(String user, String pass, String name) {
+  void submitSign(String name, String user  , String pass) {
     if (user.isNotEmpty &&
         pass.isNotEmpty && name.isNotEmpty) {
           print("Clicked");
 
-      var sign = Map<String, dynamic>();
+      var sign = Map<dynamic, dynamic>();
 
       sign['name'] = name;
       sign['nickname'] = user;
@@ -119,9 +119,10 @@ class FacadeHttp{
       
       this._ioClient
           .post(
-            'https://dry-peak-13680.herokuapp.com/user/signup',
+            'https://dry-peak-13680.herokuapp.com/user/signup?name=$name&nickname=$user&password=$pass',
             headers: { "Accept": "application/json" },
-            body: sign)
+            //body: sign
+            )
           .then((response) {
             print("Signup:");
             print('Response: ${response.statusCode}  Body:${response.body} ');
@@ -193,19 +194,15 @@ class FacadeHttp{
   void createChat(String currentUser, String toUser, String subject, BuildContext context, String token) {
 
     var newChat = Map<dynamic,  dynamic>();
-    List<String> users = [currentUser, toUser];
-    newChat['subject'] = subject;
-    newChat['users_nicknames'] = [currentUser, toUser].toString();
 
     this._ioClient.post(
-      '$URL/chat/create',
+      '$URL/chat/create?subject=$subject&users_nicknames=$currentUser,$toUser',
       headers: {
         'Authorization': 'Bearer $_token',
         "Accept": "application/json"
       },
-      body: newChat
       ).then((response) {
-        print("chat criado????");
+        print("chat criado");
         print('Response: ${response.statusCode}  Body:${response.body}');
       })
       .catchError((err) {
@@ -240,7 +237,7 @@ class FacadeHttp{
   }
 
   void middleware(String response) {
-    if(response.contains("invalid_token")) {
+    if(response.contains("expired")) {
       print("Token expirado, usuario precisa ser deslogado");
     }
   }

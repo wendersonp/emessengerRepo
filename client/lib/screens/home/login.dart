@@ -266,7 +266,7 @@ class _LoginPageStates extends State<LoginPage> {
                             onPressed: () async {
                               FacadeHttp facade = FacadeHttp.getIntance();
                              
-                              facade.submitSign(_userdControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text);
+                              facade.submitSign(_nameControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text);
                                 
                             },
                           )
