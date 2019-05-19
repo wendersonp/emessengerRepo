@@ -61,7 +61,6 @@ class FacadeHttp{
 
       this._ioClient
           .put('https://dry-peak-13680.herokuapp.com/user/login',
-          headers: {"Accept": "application/json"},
           body: login)
           .then((response)  {
               print("Login:");
@@ -76,12 +75,11 @@ class FacadeHttp{
                     'https://dry-peak-13680.herokuapp.com/user/get?nickname=$user',
                     headers: {
                       'Authorization': 'Bearer $_token',
-                      "Accept": "application/json"
                     }).then((value) {
                       print("NEWYasasSER: ${value.body}");
                       var infoNewUser = JSON.jsonDecode(value.body);
                       
-                      print("ox: ${infoNewUser['name']}");
+                      //print("ox: ${infoNewUser['name']}");
 
                       User newUser = User(
                         infoNewUser['idUser'],
@@ -182,10 +180,9 @@ class FacadeHttp{
         "Accept": "application/json"
       }).then((value) {
         print("lista de chats: ${value.body}");
-        var infoNewUser = JSON.jsonDecode(value.body);
-        
-        print("ox: ${infoNewUser}");
-        print(_token);
+        //var infoNewUser = JSON.jsonDecode(value.body);
+        //print("JSON[lista de chats]: ${infoNewUser}");
+        //print(_token);
 
       })
       .catchError((err) {
@@ -196,8 +193,9 @@ class FacadeHttp{
   void createChat(String currentUser, String toUser, String subject, BuildContext context, String token) {
 
     var newChat = Map<dynamic,  dynamic>();
-    newChat['nickname'] = subject;
-    newChat['users_nicknames'] = [currentUser, toUser];
+    List<String> users = [currentUser, toUser];
+    newChat['subject'] = subject;
+    newChat['users_nicknames'] = [currentUser, toUser].toString();
 
     this._ioClient.post(
       '$URL/chat/create',
@@ -207,10 +205,12 @@ class FacadeHttp{
       },
       body: newChat
       ).then((response) {
-        print("mensagem enviada");
-        print(response.body);
+        print("chat criado????");
+        print('Response: ${response.statusCode}  Body:${response.body}');
       })
       .catchError((err) {
+        print(err.toString());
+        print("Chat não foi criado");
       });
       
   }  
