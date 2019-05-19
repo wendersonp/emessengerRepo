@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../emails.dart';
-import '../../models/user.dart';
+import 'package:messenger_app/models/user.dart';
+
+import 'package:messenger_app/screens/emails.dart';
 
 import 'package:messenger_app/logic/facade_http.dart';
 // import 'package:http/http.dart' as http;

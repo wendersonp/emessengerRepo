@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import '../models/message.dart';
-import '../models/chat.dart';
-
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
 import 'dart:io';
 import 'package:http/io_client.dart';
 import 'dart:convert' as JSON;
+import 'package:messenger_app/logic/facade_http.dart';
+
+import 'package:messenger_app/models/message.dart';
+import 'package:messenger_app/models/chat.dart';
+
 
 class Messages extends StatefulWidget{
   final List<dynamic> _allMessages;
@@ -44,6 +45,10 @@ class _MessagesState extends State<Messages> {
          Message(_allMessagesState[0].chat, _allMessagesState[0].to,
          _allMessagesState[0].from, "Buri", DateTime.now().toString()));
 
+    FacadeHttp facade = FacadeHttp();
+
+    //facade.getChats()
+    
     super.initState();
   }
 

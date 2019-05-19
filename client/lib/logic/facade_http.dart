@@ -14,15 +14,17 @@ import 'package:messenger_app/screens/home/login.dart';
 
 class FacadeHttp{
 
+  static const String URL = 'https://dry-peak-13680.herokuapp.com';
+  
   static FacadeHttp _instance;
+  static String _token;
 
 
   HttpClient _httpClient;
   IOClient _ioClient;
-  String _token;
 
   FacadeHttp(){
-  
+      print('FacadeToken:$_token');
       _setClient();
   }
 
@@ -64,9 +66,8 @@ class FacadeHttp{
           .then((response)  {
               print("Login:");
               print('Response: ${response.statusCode}  Body:${response.body} ');
-
               
-              if(!(response.body.contains('err'))){
+              if(!(response.body.contains('rr'))){
                 print("token gerado");
                 print(response.body);
                 _token = response.body;
@@ -90,16 +91,12 @@ class FacadeHttp{
                         [],
                       );
 
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (BuildContext context) => Emails(newUser)));
                         }
                       );
               }
-            //print("Map:   $result");
-            
-        //ioClient.close();
-
            }
           )
           .catchError((err) {
@@ -110,10 +107,6 @@ class FacadeHttp{
     
     }
   }
-
-
-
-  
 
   void submitSign(String user, String pass, String name) {
     if (user.isNotEmpty &&
@@ -129,7 +122,7 @@ class FacadeHttp{
       this._ioClient
           .post(
             'https://dry-peak-13680.herokuapp.com/user/signup',
-            headers: {"Accept": "application/json"},
+            headers: { "Accept": "application/json" },
             body: sign)
           .then((response) {
             print("Signup:");
@@ -141,22 +134,25 @@ class FacadeHttp{
         })
           .catchError((err) {
             print(err.toString());
-            print('deu ruim');
+            print('Não funcionou');
 
       });
     }
   }
 
   void logoutUser(String nickname, BuildContext context) {
+
+    var logout = Map<dynamic,  String>();
+    logout['nickname'] = nickname;
+
     this._ioClient
-          .put('https://dry-peak-13680.herokuapp.com/user/logout',
-          headers: {
-            "Accept": "application/json",
-            'Authorization': 'Bearer $_token',  
-          },
-          body: {
-            nickname: nickname
-          })
+          .put(
+            '$URL/user/logout',
+            headers: {
+              "Accept": "application/json",
+              'Authorization': 'Bearer $_token'
+            },
+          body: logout)
           .then((response)  {
               print("Logout:");
               print('Response: ${response.statusCode}  Body:${response.body} ');
@@ -164,7 +160,7 @@ class FacadeHttp{
               
                 if(response.body.contains('Success')){
                   print("logout feito");
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
                 }
@@ -177,121 +173,51 @@ class FacadeHttp{
 
   }
 
-  Map getEmails(User user){
-          HttpClient httpClient = new HttpClient()
-        ..badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
-          print("CERTIFICADO HTTP");
-          // tests that cert is self signed, correct subject and correct date(s)
-          return true;
-        });
+  void getChats(String user, String token) {
+      _token = token;
+      this._ioClient.get(
+      '$URL/chat/getlist?nickname=$user',
+      headers: {
+        'Authorization': 'Bearer $_token',
+        "Accept": "application/json"
+      }).then((value) {
+        print("lista de chats: ${value.body}");
+        var infoNewUser = JSON.jsonDecode(value.body);
+        
+        print("ox: ${infoNewUser}");
+        print(_token);
 
-      IOClient ioClient = new IOClient(httpClient);
-      var urlGetList = 'https://dry-peak-13680.herokuapp.com/secured/message/getlist';
-
-      var getList = Map<String, dynamic>();
-
-      print("clicked");
-      ioClient
-          .get(
-            urlGetList,
-            headers: {"Accept": "application/json"},)
-            // PROBLEM
-            //body: getList)
-          .then((response) {
-            print("Signup:");
-            print('Response: ${response.statusCode}  Body:${response.body} ');
-
-            Map result = JSON.jsonDecode(response.body);
-
-            print("Map:   $result");
-            return result;
-
-            // dar um email como parametro pra esta função
-            // fazer função no email q pega o map result e atualiza a lista de emails
-        })
-          .catchError((err) {
-            print(err.toString());
-            print('não funcionou');
-            ioClient.close();
-      });
-
-
-  }
-
-  Map addUserInChat(Chat chat, String nickname, String id){
-    HttpClient httpClient = new HttpClient()
-        ..badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
-          // tests that cert is self signed, correct subject and correct date(s)
-          return true;
-        });
-    IOClient ioClient = new IOClient(httpClient);
-    var urlAddUserInChat = 'https://dry-peak-13680.herokuapp.com/secured/chat/addusers';   
-    var listUsers = [chat.to.nickname, chat.from.nickname, nickname];
-    var add = Map<String, dynamic>();
-    add["users_nicknames"] = [listUsers];
-    add["chat_id"] = [id];
-     ioClient
-          .put(
-            urlAddUserInChat,
-            headers: {"Accept": "application/json"},
-            body: add )
-          .then((response) {
-            print("Signup:");
-            print('Response: ${response.statusCode}  Body:${response.body} ');
-
-            Map result = JSON.jsonDecode(response.body);
-            print("Map:   $result");
-
-            return result;
-
-        })
-          .catchError((err) {
+      })
+      .catchError((err) {
         print(err.toString());
-        print('nao funcionou');
-            ioClient.close();
-
       });
+  } 
 
+  void createChat(String currentUser, String toUser, String subject, BuildContext context, String token) {
 
-  }
+    var newChat = Map<dynamic,  dynamic>();
+    newChat['nickname'] = subject;
+    newChat['users_nicknames'] = [currentUser, toUser];
 
-  Map getUserInfos(User user){
-    HttpClient httpClient = new HttpClient()
-        ..badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
-          // tests that cert is self signed, correct subject and correct date(s)
-          return true;
-        });
-    IOClient ioClient = new IOClient(httpClient);
-
-    ioClient
-          .get(
-            'https://dry-peak-13680.herokuapp.com/secured/user/get',
-            headers: {"Accept": "application/json"},
-            // PROBLEM
-          )
-          .then((response) {
-            print('Response: ${response.statusCode}  Body:${response.body} ');
-
-            Map result = JSON.jsonDecode(response.body);
-            print("Map:   $result");
-
-            return result;
-
-
-          })
-          .catchError((err) {
-            print(err.toString());
-            print('Não funcionou');
-            ioClient.close();
+    this._ioClient.post(
+      '$URL/chat/create',
+      headers: {
+        'Authorization': 'Bearer $_token',
+        "Accept": "application/json"
+      },
+      body: newChat
+      ).then((response) {
+        print("mensagem enviada");
+        print(response.body);
+      })
+      .catchError((err) {
       });
-  }
+      
+  }  
 
   void removeToken(String nickname) {
     this._ioClient
-          .put('https://dry-peak-13680.herokuapp.com/remove/token',
+          .put('$URL/remove/token',
           headers: {
             "Accept": "application/json",
           },
@@ -303,7 +229,7 @@ class FacadeHttp{
               print('Response: ${response.statusCode}  Body:${response.body} ');
               
               if(response.body.contains('success')){
-                print("token removido");
+                _token = '';
               }
            }
           )
@@ -311,6 +237,12 @@ class FacadeHttp{
             print(err.toString());
             print('Token não foi removido');
           });
+  }
+
+  void middleware(String response) {
+    if(response.contains("invalid_token")) {
+      print("Token expirado, usuario precisa ser deslogado");
+    }
   }
 
 }

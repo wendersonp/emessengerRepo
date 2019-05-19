@@ -14,6 +14,7 @@ class User {
   int get idUser => _idUser;
   String get name => _name;
   String get nickname => _nickname;
+  String get token => _accessToken;
   List get chats => _chats;
   
   String get accessToken => _accessToken;

@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:http/io_client.dart';
 import 'dart:convert' as JSON;
 
-import '../models/user.dart';
-import '../models/chat.dart';
+import 'package:messenger_app/models/chat.dart';
+import 'package:messenger_app/models/user.dart';
+
+import 'package:messenger_app/logic/facade_http.dart';
 
 class NewEmail extends StatefulWidget {
   final Map<String, dynamic> _emails;
@@ -96,30 +98,15 @@ class _NewEmailState extends State<NewEmail> {
            ), 
           ),
           Padding(
-            padding: EdgeInsets.only(top: 5.0, bottom:5.0),
-            child: TextField(
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.next,
-              controller: _messageController,
-              maxLines: 5,
-              
-              style: textStyle,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Mensagem",
-                labelStyle: labelStyle,
-              ),
-            ), 
-          ),
-          Padding(
             padding: EdgeInsets.only(top: 25.0, left: 150.0, right: 20.0),
             child: ButtonTheme(
               height: 60.0,
               minWidth: 100.0,
               child: RaisedButton(
                 onPressed: () { 
-                  if(_toController.text.isNotEmpty && _subjectController.text.isNotEmpty && _messageController.text.isNotEmpty) {
+                  if(_toController.text.isNotEmpty && _subjectController.text.isNotEmpty) {
                     sendEmail(_toController.text, _subjectController.text, _messageController.text);
+                    createNewChat(_toController.text, _subjectController.text);
                     Navigator.pop(context);
                   }         
                 },
@@ -146,7 +133,15 @@ class _NewEmailState extends State<NewEmail> {
     );
   }
 
+  void createNewChat(String toUser, String subject ) {
+      FacadeHttp facade = FacadeHttp();
+      facade.createChat(_currentUser.nickname, toUser, subject, context, _currentUser.accessToken);
+
+      print("Chat criado??");
+  }
+
   void sendEmail(String to , String subject, String message) {
+
     //var dateNow = DateTime.now();
     //var formater = DateFormat('yyyy-MM-dd hh:mm');
     //var date = formater.format(dateNow);
@@ -172,53 +167,4 @@ class _NewEmailState extends State<NewEmail> {
     }
     _currentUser.addChat(Chat(_currentUser, _currentUser, subject, [], date, message));
   }  
-
-  void createChat(String to , String subject, String message) async {
-          HttpClient httpClient = new HttpClient()
-        ..badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
-          print("CERTIFICADO HTTP");
-          // tests that cert is self signed, correct subject and correct date(s)
-          return true;
-        });
-
-      IOClient ioClient = new IOClient(httpClient);
-      var urlCreateChat = 'https://192.168.0.39:8443/chat/create';
-
-
-      Map<String, dynamic> newChat = {
-        "subject": subject,
-        "creator_nickname": _currentUser.nickname, 
-        "destination_nickneme": to, 
-      };
-
-    
-      print("clicked");
-      ioClient
-          .post(
-            urlCreateChat,
-            headers: {"Accept": "application/json"},
-            // PROBLEM
-            body: newChat)
-          .then((response) {
-            print("Signup:");
-            print('Response: ${response.statusCode}  Body:${response.body} ');
-
-            Map result = JSON.jsonDecode(response.body);
-            print("Map:   $result");
-            if(response.body == null) {
-              print("Chat não foi criado");
-            }
-            else {
-              print("funcionou");
-            }
-          })
-
-          .catchError((err) {
-            print(err.toString());
-            print('deu ruim');
-            ioClient.close();
-
-          });
-    }
 }

@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import './new_email.dart';
-import '../models/chat.dart';
-import './messages.dart';
-import '../models/user.dart';
-
-//import 'dart:async';
 import 'dart:io';
 import 'package:http/io_client.dart';
 import 'dart:convert' as JSON;
-//import 'package:http/http.dart' as http;
 
+import 'package:messenger_app/models/chat.dart';
+import 'package:messenger_app/models/user.dart';
 
+import 'package:messenger_app/screens/new_email.dart';
+import 'package:messenger_app/screens/messages.dart';
+
+import 'package:messenger_app/logic/facade_http.dart';
 
 class Emails extends StatefulWidget {
 
@@ -38,6 +37,12 @@ class _EmailsState extends State<Emails> {
   
   void initState() {
     _currentUserState.addChat(Chat(_currentUserState, _currentUserState, "slack", [], DateFormat.Hm().format(DateTime.now()).toString(), "Hi"));
+
+    FacadeHttp facade = FacadeHttp();
+    facade.getChats(_currentUserState.nickname, _currentUserState.accessToken);
+    
+    super.initState();
+
   }
 
   Map<String, dynamic> allData = {
@@ -50,13 +55,15 @@ class _EmailsState extends State<Emails> {
   
   @override
   Widget build(BuildContext context) {
-    debugPrint("USUARIO");
       if (_currentUserState == null) {
         debugPrint("No user");
       } else {
-        debugPrint(_currentUserState.name);
-        debugPrint(_currentUserState.nickname);
-        //getEmails();
+        debugPrint("Name: " + _currentUserState.name);
+        debugPrint("Nickname: " + _currentUserState.nickname);
+
+        FacadeHttp facade = FacadeHttp();
+        facade.getChats(_currentUserState.nickname, _currentUserState.accessToken);
+        
       }
     return Scaffold(
       appBar: AppBar(
@@ -79,6 +86,22 @@ class _EmailsState extends State<Emails> {
               Padding(
                 padding: EdgeInsets.only(top: 30.0),
                 child: Text("Hello"),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 120.0),
+                child: Card(
+                  elevation: 2.0,
+                  child: Padding(padding: EdgeInsets.symmetric(horizontal: 110.0), child: ListTile(
+                  enabled: true,
+                  title: Text("Sair"),
+                  onTap: () {
+                    FacadeHttp facade = FacadeHttp.getIntance();
+                             
+                    facade.logoutUser(_currentUserState.nickname, context);
+                  },
+                ),
+               ), 
+              ),
               )
             ],
           ),
@@ -99,10 +122,6 @@ class _EmailsState extends State<Emails> {
     bool result = await Navigator.push(context,
       MaterialPageRoute(
         builder: (context) => NewEmail(allData, _currentUserState),),);
-    
-    if(result == true) {
-      debugPrint("Pagina de novos emails");
-    }
   }
  
   //Very usefull function

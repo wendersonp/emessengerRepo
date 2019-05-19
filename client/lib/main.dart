@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './screens/home/login.dart';
+import 'package:messenger_app/screens/home/login.dart';
 
 void main() => runApp(MyApp());
 
