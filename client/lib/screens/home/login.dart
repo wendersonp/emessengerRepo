@@ -5,10 +5,6 @@ import 'package:messenger_app/models/user.dart';
 import 'package:messenger_app/screens/emails.dart';
 
 import 'package:messenger_app/logic/facade_http.dart';
-// import 'package:http/http.dart' as http;
-// import 'dart:async';
-// import 'package:async/async.dart';
-// import 'package:dio/dio.dart';,
 
 class LoginPage extends StatefulWidget {
 

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:messenger_app/logic/class/chat_notifier.dart';
 
 import 'package:messenger_app/models/user.dart';
 
@@ -6,7 +9,6 @@ import 'package:messenger_app/screens/new_email.dart';
 import 'package:messenger_app/screens/messages.dart';
 
 import 'package:messenger_app/logic/facade_http.dart';
-import 'package:messenger_app/logic/class/notifier.dart';
 
 class Emails extends StatefulWidget {
 
@@ -31,10 +33,10 @@ class _EmailsState extends State<Emails> {
   
   void initState() {
 
-    // atualizando os chats
+       
     FacadeHttp facade = FacadeHttp();
 
-        Notifier((c) {
+        ChatNotifier((c) {
           setState(() {
 
             print("Lista foi atualizada");
@@ -45,6 +47,7 @@ class _EmailsState extends State<Emails> {
     }, facade, _currentUserState.nickname, _currentUserState.accessToken);
 
     
+    print("Fora do metodo $_chats");
     super.initState();
 
   }
@@ -141,12 +144,9 @@ class _EmailsState extends State<Emails> {
         String sub = _chats[reverse]['subject'];
         String date = _chats[reverse]['lastUpdate'];
 
-        // data precisa ser formatada:
-        // Intl.defaultLocale = 'pt_BR';
-        // initializeDateFormatting();
-        // print("date before format: $date");
-        // var dateHm = DateFormat.Hm('pt_BR').format(DateTime.parse(date));
-        // print(dateHm);
+        Intl.defaultLocale = 'pt_BR';
+        initializeDateFormatting();
+        var dateHm = DateFormat.Hm('pt_BR').format(DateTime.parse(date));
 
         return Card(
           color: Colors.white,
@@ -154,7 +154,7 @@ class _EmailsState extends State<Emails> {
           child: ListTile(
             //leading: Text(to.substring(0,1)),
             leading: Text("${sub.substring(0,1)}"),
-            title: Text("$to  ", 
+            title: Text("$to    $dateHm", 
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 ),

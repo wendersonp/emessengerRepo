@@ -12,11 +12,11 @@ class Message {
   
   Message(this._from, this._idChat);
 
-    // talvez não precise
-    Map toMap() {
+  // Talvez não precise
+  Map toMap() {
     var map = Map<String, dynamic>();
    
-    
     return map;
   }
+
 }

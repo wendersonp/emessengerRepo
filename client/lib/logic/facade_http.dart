@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'dart:convert' as JSON;
 import 'dart:io';
 import 'package:http/io_client.dart';
+import 'package:messenger_app/logic/class/chat_notifier.dart';
 
 import 'package:messenger_app/screens/emails.dart';
 import 'package:messenger_app/models/user.dart';
 
 import 'package:messenger_app/screens/home/login.dart';
-import '../logic/class/notifier.dart';
 
 class FacadeHttp {
 
@@ -22,7 +22,7 @@ class FacadeHttp {
 
   HttpClient _httpClient;
   IOClient _ioClient;
-  Notifier _notifier;
+  ChatNotifier _chatNotifier;
 
   FacadeHttp(){
       print('FacadeToken:$_token');
@@ -72,7 +72,14 @@ class FacadeHttp {
                 print(response.body);
                 _token = response.body;
 
-                _notifier = new Notifier(null, this, user, _token);
+                _chatNotifier = new ChatNotifier(
+                (chats){
+                  
+                  print('--------------------UPDATE-----------------');
+                  chats.forEach((chat) => print('Chat: ' + chat.toString()));
+
+                }
+                , this, user, _token);
 
                 this._ioClient.get(
                     '$BASE_URL/user/get?nickname=$user',
@@ -164,7 +171,7 @@ class FacadeHttp {
                           context,
                           MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
 
-                  _notifier.stop();
+                  _chatNotifier.stop();
               }
             )
           .catchError((err) {
@@ -234,8 +241,7 @@ class FacadeHttp {
 
 
   // Notify precisa ser implementado para esse metodo
-  Future<String> getMessages(String user, String idChat, String token) async {
-      _token = token;
+  Future<String> getMessage(String user, String idChat) async {
       var response = await this._ioClient.get(
       '$BASE_URL/chat/getlist?nickname=$user&id_chat=idChat',
       headers: {

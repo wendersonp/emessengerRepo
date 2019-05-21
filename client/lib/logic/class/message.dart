@@ -5,7 +5,6 @@ class Message {
   Chat _chat;
   User _to;
   User _from; //isso aq não vai funcionar; User so pode ter uma instancia _from será só um ponteiro to=from
-//  String from
 //  String to
               //pode ser assim
   String _message;

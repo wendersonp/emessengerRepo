@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:messenger_app/logic/class/message_notifier.dart';
 import 'package:messenger_app/logic/facade_http.dart';
 
 import 'package:messenger_app/models/user.dart';
@@ -23,12 +24,12 @@ class Messages extends StatefulWidget{
 
 class _MessagesState extends State<Messages> {
 
+  // final List<dynamic> messages;
+  // final Chat _chatState;
 
   final User _currentUserState;
   final int _idChatState;
   final List _usersState;
-
-  //use essa lista para as mensagens
   List messages;
 
   _MessagesState(this._currentUserState, this._idChatState, this._usersState);
@@ -39,9 +40,14 @@ class _MessagesState extends State<Messages> {
 
     FacadeHttp facade = FacadeHttp.getIntance();
 
-    // Aki é onde o Notifier tem que ser iniciado
-    // Veja o exemplo em emails.dart
-
+    MessageNotifier((m) {
+      setState(() {
+          messages = m;
+          print("Atualização mensagens");
+          print(messages);
+          print("==========================");
+      });
+    }, facade, _currentUserState.nickname, _idChatState.toString());
 
     super.initState();
   }
