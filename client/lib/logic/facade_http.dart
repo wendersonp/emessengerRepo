@@ -1,20 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
-//import 'dart:http';
 import 'dart:convert' as JSON;
 import 'dart:io';
-//import 'package:messenger_app/logic/class/user.dart';
 import 'package:http/io_client.dart';
 
 import 'package:messenger_app/screens/emails.dart';
 import 'package:messenger_app/models/user.dart';
 
-import 'class/chat.dart';
 import 'package:messenger_app/screens/home/login.dart';
+import '../logic/class/notifier.dart';
 
-class FacadeHttp{
+class FacadeHttp {
 
-  static const String URL = 'https://dry-peak-13680.herokuapp.com';
+  static const String BASE_URL = 'https://dry-peak-13680.herokuapp.com';
   
   static FacadeHttp _instance;
   static String _token;
@@ -22,6 +22,7 @@ class FacadeHttp{
 
   HttpClient _httpClient;
   IOClient _ioClient;
+  Notifier _notifier;
 
   FacadeHttp(){
       print('FacadeToken:$_token');
@@ -60,7 +61,7 @@ class FacadeHttp{
       login['password'] = pass;
 
       this._ioClient
-          .put('https://dry-peak-13680.herokuapp.com/user/login',
+          .put('$BASE_URL/user/login',
           body: login)
           .then((response)  {
               print("Login:");
@@ -71,8 +72,10 @@ class FacadeHttp{
                 print(response.body);
                 _token = response.body;
 
+                _notifier = new Notifier(null, this, user, _token);
+
                 this._ioClient.get(
-                    'https://dry-peak-13680.herokuapp.com/user/get?nickname=$user',
+                    '$BASE_URL/user/get?nickname=$user',
                     headers: {
                       'Authorization': 'Bearer $_token',
                     }).then((value) {
@@ -119,9 +122,8 @@ class FacadeHttp{
       
       this._ioClient
           .post(
-            'https://dry-peak-13680.herokuapp.com/user/signup?name=$name&nickname=$user&password=$pass',
+            '$BASE_URL/user/signup?name=$name&nickname=$user&password=$pass',
             headers: { "Accept": "application/json" },
-            //body: sign
             )
           .then((response) {
             print("Signup:");
@@ -146,7 +148,7 @@ class FacadeHttp{
 
     this._ioClient
           .put(
-            '$URL/user/logout',
+            '$BASE_URL/user/logout',
             headers: {
               "Accept": "application/json",
               'Authorization': 'Bearer $_token'
@@ -157,12 +159,12 @@ class FacadeHttp{
               print('Response: ${response.statusCode}  Body:${response.body} ');
 
               
-                if(response.body.contains('Success')){
                   print("logout feito");
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
-                }
+
+                  _notifier.stop();
               }
             )
           .catchError((err) {
@@ -172,31 +174,22 @@ class FacadeHttp{
 
   }
 
-  void getChats(String user, String token) {
+  Future<String> getChats(String user, String token) async {
       _token = token;
-      this._ioClient.get(
-      '$URL/chat/getlist?nickname=$user',
+      var response = await this._ioClient.get(
+      '$BASE_URL/chat/getlist?nickname=$user',
       headers: {
         'Authorization': 'Bearer $_token',
         "Accept": "application/json"
-      }).then((value) {
-        print("lista de chats: ${value.body}");
-        //var infoNewUser = JSON.jsonDecode(value.body);
-        //print("JSON[lista de chats]: ${infoNewUser}");
-        //print(_token);
-
-      })
-      .catchError((err) {
-        print(err.toString());
       });
+
+      return response.body;
   } 
 
   void createChat(String currentUser, String toUser, String subject, BuildContext context, String token) {
 
-    var newChat = Map<dynamic,  dynamic>();
-
     this._ioClient.post(
-      '$URL/chat/create?subject=$subject&users_nicknames=$currentUser,$toUser',
+      '$BASE_URL/chat/create?subject=$subject&users_nicknames=$currentUser,$toUser',
       headers: {
         'Authorization': 'Bearer $_token',
         "Accept": "application/json"
@@ -209,12 +202,89 @@ class FacadeHttp{
         print(err.toString());
         print("Chat não foi criado");
       });
-      
   }  
+
+  void sendMessage(String currentUser, int idChat, String message) {
+
+      print(_token);
+
+      
+      var messageData = Map<dynamic, dynamic>();
+
+      messageData['sender_nickname'] = currentUser;
+      messageData['chat_id'] = idChat.toString();
+      messageData['text_message'] = message;
+
+        this._ioClient.post(
+      '$BASE_URL/message/send',
+      headers: {
+        'Authorization': 'Bearer $_token',
+        "Accept": "application/json"
+      },
+      body: messageData,
+      ).then((response) {
+        print("mensagem enviada????");
+        print('Response: ${response.statusCode}  Body:${response.body}');
+      })
+      .catchError((err) {
+        print(err.toString());
+        print("Mensagem nao foi enviada");
+      });
+  }
+
+
+  // Notify precisa ser implementado para esse metodo
+  Future<String> getMessages(String user, String idChat, String token) async {
+      _token = token;
+      var response = await this._ioClient.get(
+      '$BASE_URL/chat/getlist?nickname=$user&id_chat=idChat',
+      headers: {
+        'Authorization': 'Bearer $_token',
+        "Accept": "application/json"
+      });
+
+      return response.body;
+  } 
+
+  // Precisa melhorar
+  void addUsersChat(String idChat, List users, String newUser, String token) {
+      String nicks = '';
+      
+      users.forEach((u) {
+        nicks = nicks + "${u['nickname']},";
+        print("==================");
+        print(nicks);
+        print("==================");
+      });
+
+    String usersNicknames = nicks + "$newUser";
+
+    _token = token;
+
+    this._ioClient.put(
+      '$BASE_URL/chat/addusers?users_nicknames=$usersNicknames&chat_id=$idChat',
+      headers: {
+        'Authorization': 'Bearer $_token',
+        "Accept": "application/json"
+      },
+      ).then((response) {
+        print('Response: ${response.statusCode}  Body:${response.body}');
+        if(response.statusCode == 200){
+          var map = json.decode(response.body);
+          users = map['users'];
+        }
+
+          print(users);
+      })
+      .catchError((err) {
+        print(err.toString());
+        print("Usuário não foi adicionado");
+      });
+  }
 
   void removeToken(String nickname) {
     this._ioClient
-          .put('$URL/remove/token',
+          .put('$BASE_URL/remove/token',
           headers: {
             "Accept": "application/json",
           },

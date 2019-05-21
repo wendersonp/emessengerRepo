@@ -2,7 +2,7 @@ import './chat.dart';
 
 
 class User {
-  String _name="";
+  //String _name="";
   String _nickname="";
   String _password="";
   String _creationDate;

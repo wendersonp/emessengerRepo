@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'dart:io';
-import 'package:http/io_client.dart';
-import 'dart:convert' as JSON;
 
-import 'package:messenger_app/models/chat.dart';
 import 'package:messenger_app/models/user.dart';
 
 import 'package:messenger_app/screens/new_email.dart';
 import 'package:messenger_app/screens/messages.dart';
 
 import 'package:messenger_app/logic/facade_http.dart';
+import 'package:messenger_app/logic/class/notifier.dart';
 
 class Emails extends StatefulWidget {
 
@@ -18,41 +14,41 @@ class Emails extends StatefulWidget {
   //final String _nickname;
   final User _currentUser;
   Emails(this._currentUser);
-  //{
-    //_currentUser = User(_name, _nickname, []);
-  //}
 
   @override
   State<StatefulWidget> createState() => _EmailsState(_currentUser);
 }
 
 class _EmailsState extends State<Emails> {
-  //String date = DateFormat.Hm().format(DateTime.now());
   final User _currentUserState;
-  //final String _nameState;
-  //final String _nicknameState;
   _EmailsState(this._currentUserState);
-  //_currentUser.addChat(Chat(_currentUserState, _currentUserState, "Hello", [], date, "message"));
+  
+
+
+  List _chats;
+  //List _chatsWork;
   int listCount;
   
   void initState() {
-    _currentUserState.addChat(Chat(_currentUserState, _currentUserState, "slack", [], DateFormat.Hm().format(DateTime.now()).toString(), "Hi"));
 
+    // atualizando os chats
     FacadeHttp facade = FacadeHttp();
-    facade.getChats(_currentUserState.nickname, _currentUserState.accessToken);
+
+        Notifier((c) {
+          setState(() {
+
+            print("Lista foi atualizada");
+            _chats = c;
+            print(_chats);
+          });
+      
+    }, facade, _currentUserState.nickname, _currentUserState.accessToken);
+
     
     super.initState();
 
   }
 
-  Map<String, dynamic> allData = {
-    "username": "Carlos",
-    "name": "Nobrega",
-    "nickname": "Alves",
-    "emails": [],
-  };
-
-  
   @override
   Widget build(BuildContext context) {
       if (_currentUserState == null) {
@@ -60,14 +56,10 @@ class _EmailsState extends State<Emails> {
       } else {
         debugPrint("Name: " + _currentUserState.name);
         debugPrint("Nickname: " + _currentUserState.nickname);
-
-        FacadeHttp facade = FacadeHttp();
-        facade.getChats(_currentUserState.nickname, _currentUserState.accessToken);
-        
       }
     return Scaffold(
       appBar: AppBar(
-        title: Text("Email list"),
+        title: Text("Lista de conversas"),
       ),
       body:listEmailUser(),
       drawer: Drawer(
@@ -85,7 +77,7 @@ class _EmailsState extends State<Emails> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 30.0),
-                child: Text("Hello"),
+                child: Text("Olá"),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 120.0),
@@ -119,42 +111,9 @@ class _EmailsState extends State<Emails> {
   }
 
   void navigateToNewEmail() async {
-    bool result = await Navigator.push(context,
+    Navigator.push(context,
       MaterialPageRoute(
-        builder: (context) => NewEmail(allData, _currentUserState),),);
-  }
- 
-  //Very usefull function
-  // ListView.builder 
-  Widget listEmail() {
-    int listSize = listEmailsCount(allData["emails"]);
-
-    if(listSize == 0) {
-      return Center(child: Text("Você não possui mensagens", style: TextStyle(color: Colors.black),),);
-    }
-    return  ListView.builder(
-      itemCount: listSize,
-      itemBuilder: (BuildContext context, int position) {
-        
-        String to = allData['emails'][position]["to"];
-        
-        return Card(
-          color: Colors.white,
-          elevation: 2.0,
-          child: ListTile(
-            leading: Text(to.substring(0,1)),
-            title: Text("$to ${allData['emails'][position]["dateEmail"]} ", style: TextStyle(fontWeight: FontWeight.w500,),),
-            subtitle: Text("${allData['emails'][position]["subject"]}"),
-            onTap: () {
-              Navigator.push(context,
-              MaterialPageRoute(
-                builder: (context) => Messages(allData["emails"][position]["messages"], allData["emails"][position])),
-              );
-            },
-          ),
-        );
-      },
-    );
+        builder: (context) => NewEmail(_currentUserState),),);
   }
 
   int listEmailsCount(List emails) {
@@ -166,8 +125,9 @@ class _EmailsState extends State<Emails> {
 
   // Using that one
   Widget listEmailUser() {
-    int listSize = listEmailsCount(_currentUserState.chats);
-
+    //int listSize = listEmailsCount(_currentUserState.chats);
+    int listSize = listEmailsCount(_chats);
+    print("List size: $listSize");
     if(listSize == 0) {
       return Center(child: Text("Caixa de entrada vazia", style: TextStyle(color: Colors.black54)));
     }
@@ -175,16 +135,26 @@ class _EmailsState extends State<Emails> {
       itemCount: listSize,
       itemBuilder: (BuildContext context, int position) {
         
-        String to = _currentUserState.chats[position].to.nickname;
-        //String date = _currentUserState.chats[position].date;
-        String sub = _currentUserState.chats[position].subject;
+        int reverse = listSize-position-1;
+
+        String to = _chats[reverse]['users'][1]['nickname'];
+        String sub = _chats[reverse]['subject'];
+        String date = _chats[reverse]['lastUpdate'];
+
+        // data precisa ser formatada:
+        // Intl.defaultLocale = 'pt_BR';
+        // initializeDateFormatting();
+        // print("date before format: $date");
+        // var dateHm = DateFormat.Hm('pt_BR').format(DateTime.parse(date));
+        // print(dateHm);
+
         return Card(
           color: Colors.white,
           elevation: 2.0,
           child: ListTile(
             //leading: Text(to.substring(0,1)),
             leading: Text("${sub.substring(0,1)}"),
-            title: Text("$to ${_currentUserState.chats[position].date} ", 
+            title: Text("$to  ", 
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 ),
@@ -193,7 +163,7 @@ class _EmailsState extends State<Emails> {
             onTap: () {
               Navigator.push(context,
               MaterialPageRoute(
-                builder: (context) => Messages(_currentUserState.chats[position].messages, _currentUserState.chats[position])),
+                builder: (context) => Messages(_currentUserState, _chats[reverse]['idChat'], _chats[reverse]['users'])),
               );
             },
           ),
@@ -201,42 +171,4 @@ class _EmailsState extends State<Emails> {
       },
     );
   }
-
-  void getEmails() async {
-          HttpClient httpClient = new HttpClient()
-        ..badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
-          print("CERTIFICADO HTTP");
-          // tests that cert is self signed, correct subject and correct date(s)
-          return true;
-        });
-
-      IOClient ioClient = new IOClient(httpClient);
-      var urlGetList = 'https://192.168.0.39:8443/chat/getlist';
-
-      var getList = Map<String, dynamic>();
-    
-      getList['nickname'] = _currentUserState.nickname;
-
-      print("clicked");
-      ioClient
-          .get(
-            urlGetList,
-            headers: {"Accept": "application/json"},)
-            // GET isnt accepting a body
-            //body: getList)
-          .then((response) {
-            print("getList:");
-            print('Response: ${response.statusCode}  Body:${response.body} ');
-
-            Map result = JSON.jsonDecode(response.body);
-            print("Map:   $result");
-        })
-          .catchError((err) {
-            print(err.toString());
-            print('deu ruim');
-            ioClient.close();
-
-      });
-    }
 }

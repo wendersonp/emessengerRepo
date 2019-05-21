@@ -1,21 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'dart:io';
-import 'package:http/io_client.dart';
-import 'dart:convert' as JSON;
 
-import 'package:messenger_app/models/chat.dart';
 import 'package:messenger_app/models/user.dart';
 
 import 'package:messenger_app/logic/facade_http.dart';
 
 class NewEmail extends StatefulWidget {
-  final Map<String, dynamic> _emails;
   final User _currentUser;
 
-  NewEmail(this._emails, this._currentUser);
-  //NewEmail({Key key, this.name}) : super(key: key);
-  //final String name;
+  NewEmail(this._currentUser);
 
   _NewEmailState createState() => _NewEmailState();
 }
@@ -23,7 +15,6 @@ class NewEmail extends StatefulWidget {
 class _NewEmailState extends State<NewEmail> {
 
   User _currentUser;
-   Map<String, dynamic> _allEmails;
   TextEditingController _toController = TextEditingController();
   TextEditingController _subjectController = TextEditingController();
   TextEditingController _messageController = TextEditingController();
@@ -31,7 +22,6 @@ class _NewEmailState extends State<NewEmail> {
   @override
   void initState() {
     _currentUser = widget._currentUser;
-    _allEmails = widget._emails;
     _toController.text = "";
     _subjectController.text = "";
     _messageController.text = "";
@@ -105,8 +95,8 @@ class _NewEmailState extends State<NewEmail> {
               child: RaisedButton(
                 onPressed: () { 
                   if(_toController.text.isNotEmpty && _subjectController.text.isNotEmpty) {
-                    sendEmail(_toController.text, _subjectController.text, _messageController.text);
-                    createNewChat(_toController.text, _subjectController.text);
+                    FacadeHttp facade = FacadeHttp.getIntance(); 
+                    facade.createChat(_currentUser.nickname,_toController.text, _subjectController.text, context, _currentUser.token);
                     Navigator.pop(context);
                   }         
                 },
@@ -136,35 +126,7 @@ class _NewEmailState extends State<NewEmail> {
   void createNewChat(String toUser, String subject ) {
       FacadeHttp facade = FacadeHttp();
       facade.createChat(_currentUser.nickname, toUser, subject, context, _currentUser.accessToken);
-
-      print("Chat criado??");
   }
 
-  void sendEmail(String to , String subject, String message) {
 
-    //var dateNow = DateTime.now();
-    //var formater = DateFormat('yyyy-MM-dd hh:mm');
-    //var date = formater.format(dateNow);
-    var date = DateFormat.Hm().format(DateTime.now()).toString();
-    debugPrint("to: $to, subject: $subject, message: $message, date: ${DateFormat.Hm().format(DateTime.now()).toString()} ");
-    Map<String, dynamic> email = {
-      "from": "Carlos", 
-      "to": to, 
-      "subject": subject,
-      "dateEmail": DateFormat.Hm().format(DateTime.now()).toString(), 
-      "messages":[{
-        "fromDialog": "Carlos", 
-        "message": message, 
-        "date": DateFormat.Hm().format(DateTime.now()).toString()
-        }],
-    };
-
-    if(_allEmails["emails"] == null) {
-      _allEmails["emails"] = [email];
-    }
-    else {
-      _allEmails["emails"].insert(0, email);
-    }
-    _currentUser.addChat(Chat(_currentUser, _currentUser, subject, [], date, message));
-  }  
-}
+ }

@@ -6,7 +6,7 @@ class User {
   String _name;
   String _nickname;
   String _accessToken;
-  List<Chat> _chats;
+  List _chats;
   
 
   User(this._idUser, this._name, this._nickname, this._accessToken, this._chats);

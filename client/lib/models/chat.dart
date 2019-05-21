@@ -1,5 +1,7 @@
-import './message.dart';
-import './user.dart';
+
+
+import 'package:messenger_app/models/message.dart';
+import 'package:messenger_app/models/user.dart';
 
 class Chat {
   User _from;
@@ -11,7 +13,6 @@ class Chat {
 
   Chat(this._to, this._from, this._subject, this._messages, this._date, this._message) {
 
-    //Message m = Message(this, _to, _from, _message, _date);
     _from.addChat(this);
     _to.addChat(this);
   }
@@ -29,26 +30,16 @@ class Chat {
   
   Map toMap() {
     var map = Map<String, dynamic>();
-    //var m = List<Map<String, dynamic>>();
    
     map["to"] = _to.nickname;
     map["from"] = _from.nickname;
     map["messages"] = _messages.map((message) => message.toMap()).toList();
     
-    //m.add(map);
     
     return map;
   }
 
-  // set message(String message) {
-  //   if(message.length <= 255) {
-  //     _message = message;
-  //   }
-  // }
 
-  // set date(String date) {
-  //   _date = date;
-  // }
 
 
 }
