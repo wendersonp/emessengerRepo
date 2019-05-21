@@ -243,14 +243,14 @@ class FacadeHttp {
   // Notify precisa ser implementado para esse metodo
   Future<String> getMessage(String user, String idChat) async {
       var response = await this._ioClient.get(
-      '$BASE_URL/chat/getlist?nickname=$user&id_chat=idChat',
+      '$BASE_URL/message/getlist?nickname=$user&chat_id=$idChat',
       headers: {
         'Authorization': 'Bearer $_token',
         "Accept": "application/json"
       });
 
       return response.body;
-  } 
+  }
 
   // Precisa melhorar
   void addUsersChat(String idChat, List users, String newUser, String token) {
