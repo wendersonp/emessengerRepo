@@ -19,15 +19,14 @@ class MessageNotifier
     Timer.periodic(const Duration(seconds: 1), update);
   }
 
-  
   void update(Timer timer)
   {
     if(!_running)
       timer.cancel();
 
       _facadeHttp.getMessage(_user, _chatID).then( (body){
+        
         var data = JSON.jsonDecode(body);
-
         List list = [];
         Map message;
 
@@ -39,7 +38,10 @@ class MessageNotifier
         else if(data is List)
           list = data;
 
-        message = list.last;
+        if(list.isEmpty)
+          return;
+          
+        message = list[0];
 
         if(message == null)
           return;

@@ -25,8 +25,7 @@ class ChatNotifier
     if(!_running)
       timer.cancel();
 
-    _facade.getChats(_user, _token)
-    .then((body) {
+    _facade.getChats(_user, _token).then((body) {
       var data = JSON.jsonDecode(body);
       Map map = Map();
       List list = List();

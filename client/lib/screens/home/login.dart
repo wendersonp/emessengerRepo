@@ -161,10 +161,19 @@ class _LoginPageStates extends State<LoginPage> {
                             onPressed: ()  {
                               FacadeHttp facade = FacadeHttp.getIntance();
 
-                              facade.submitLogin(_userControllerLogin.text, _passwordControllerLogin.text, context);
-                              
-                            },
+                              facade.submitLogin(_userControllerLogin.text, _passwordControllerLogin.text, context)
+                              .then((valid){
+                                if(!valid){
+                                  showDialog(context: context, builder: (context) {
+                                    CloseButton button = CloseButton(key: Key('X'));
 
+                                    return AlertDialog(title: Text('Erro'),
+                                                       content: Text('Usuário ou senha incorretos'),
+                                                       actions: <Widget>[button] );
+                                  });
+                                }
+                              });
+                            }
                           )
                       )
                   )
@@ -262,7 +271,7 @@ class _LoginPageStates extends State<LoginPage> {
                             onPressed: () async {
                               FacadeHttp facade = FacadeHttp.getIntance();
                              
-                              facade.submitSign(_nameControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text);
+                              facade.submitSign(_nameControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text, context);
                                 
                             },
                           )

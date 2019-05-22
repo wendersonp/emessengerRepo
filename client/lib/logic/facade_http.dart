@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert' as JSON;
 import 'dart:io';
 import 'package:http/io_client.dart';
-import 'package:messenger_app/logic/class/chat_notifier.dart';
 
 import 'package:messenger_app/screens/emails.dart';
 import 'package:messenger_app/models/user.dart';
@@ -22,7 +21,6 @@ class FacadeHttp {
 
   HttpClient _httpClient;
   IOClient _ioClient;
-  ChatNotifier _chatNotifier;
 
   FacadeHttp(){
       print('FacadeToken:$_token');
@@ -48,7 +46,7 @@ class FacadeHttp {
         return _instance;
   }
 
-  void submitLogin(String user, String pass, BuildContext context) async {
+  Future<bool> submitLogin(String user, String pass, BuildContext context) async {
     
     if (user.isNotEmpty &&
         pass.isNotEmpty) {
@@ -60,26 +58,20 @@ class FacadeHttp {
       login['nickname'] = user;
       login['password'] = pass;
 
-      this._ioClient
+      return await this._ioClient
           .put('$BASE_URL/user/login',
           body: login)
           .then((response)  {
               print("Login:");
               print('Response: ${response.statusCode}  Body:${response.body} ');
+
+              if(response.body.contains('Login Error'))
+                return false;
               
               if(!(response.body.contains('rr'))){
                 print("token gerado");
                 print(response.body);
                 _token = response.body;
-
-                _chatNotifier = new ChatNotifier(
-                (chats){
-                  
-                  print('--------------------UPDATE-----------------');
-                  chats.forEach((chat) => print('Chat: ' + chat.toString()));
-
-                }
-                , this, user, _token);
 
                 this._ioClient.get(
                     '$BASE_URL/user/get?nickname=$user',
@@ -105,18 +97,18 @@ class FacadeHttp {
                         }
                       );
               }
+
+              return true;
            }
           )
           .catchError((err) {
             print(err.toString());
             print('deu ruim');
       });
-
-    
     }
   }
 
-  void submitSign(String name, String user  , String pass) {
+  void submitSign(String name, String user  , String pass, BuildContext context) {
     if (user.isNotEmpty &&
         pass.isNotEmpty && name.isNotEmpty) {
           print("Clicked");
@@ -138,6 +130,11 @@ class FacadeHttp {
 
             if(response.body == "Signup Success"){ 
               print("Deu certo signup");
+              
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
+
             }
         })
           .catchError((err) {
@@ -171,7 +168,6 @@ class FacadeHttp {
                           context,
                           MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
 
-                  _chatNotifier.stop();
               }
             )
           .catchError((err) {
@@ -211,9 +207,9 @@ class FacadeHttp {
       });
   }  
 
-  void sendMessage(String currentUser, int idChat, String message) {
+  void sendMessage(String currentUser, int idChat, String message, String token) {
 
-      print(_token);
+      _token = token;
 
       
       var messageData = Map<dynamic, dynamic>();
@@ -254,21 +250,11 @@ class FacadeHttp {
 
   // Precisa melhorar
   void addUsersChat(String idChat, List users, String newUser, String token) {
-      String nicks = '';
-      
-      users.forEach((u) {
-        nicks = nicks + "${u['nickname']},";
-        print("==================");
-        print(nicks);
-        print("==================");
-      });
-
-    String usersNicknames = nicks + "$newUser";
 
     _token = token;
 
     this._ioClient.put(
-      '$BASE_URL/chat/addusers?users_nicknames=$usersNicknames&chat_id=$idChat',
+      '$BASE_URL/chat/addusers?users_nicknames=$newUser&chat_id=$idChat',
       headers: {
         'Authorization': 'Bearer $_token',
         "Accept": "application/json"

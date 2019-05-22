@@ -26,7 +26,6 @@ class _MessagesState extends State<Messages> {
 
   // final List<dynamic> messages;
   // final Chat _chatState;
-
   final User _currentUserState;
   final int _idChatState;
   final List _usersState;
@@ -134,7 +133,7 @@ class _MessagesState extends State<Messages> {
                      FacadeHttp facade = FacadeHttp.getIntance();
                       
                       if(_messageController.text.isNotEmpty)
-                        facade.sendMessage(_currentUserState.nickname, _idChatState, _messageController.text);
+                        facade.sendMessage(_currentUserState.nickname, _idChatState, _messageController.text, _currentUserState.token);
 
                       _messageController.text = '';
                     }
@@ -176,8 +175,8 @@ class _MessagesState extends State<Messages> {
       oldMessageDay = int.parse(messages[position+1]["sentTime"].substring(8,10));
     } 
 
-    if (messages.length == position+1
-        || position == 0 && messageList.length > 0 
+      if (messages.length == position+1 
+        || messageList.length > 0 
         && messageList[position]["senderUser"]["nickname"] != messageList[position+1]["senderUser"]["nickname"]
         || newMessageDay != oldMessageDay) {
       return Column(
@@ -194,10 +193,9 @@ class _MessagesState extends State<Messages> {
                 ],
               ),
               Text("${messages[position]["textMessage"]}"),],);
-    } else if (position > 0 && messageList.length > 0 && messageList[position]["senderUser"]["nickname"] == messageList[position-1]["senderUser"]["nickname"]) {
+    } else if (position > 0 && messageList.length > 0 && messageList[position]["senderUser"]["nickname"] == messageList[position+1]["senderUser"]["nickname"]) {
       return Text("${messages[position]["textMessage"]}");
     } else if (position == 0 && messageList.length > 0 && messageList[position]["senderUser"]["nickname"] == messageList[position+1]["senderUser"]["nickname"]){
-      debugPrint("Ta chegando so no final");
       return Text("${messages[position]["textMessage"]}");
     }
     return Container();

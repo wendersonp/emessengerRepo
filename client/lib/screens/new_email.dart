@@ -46,14 +46,6 @@ class _NewEmailState extends State<NewEmail> {
       appBar: AppBar(
         automaticallyImplyLeading: true,
         title: Text("Enviar novo email"),
-        actions: [
-          IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(5.0),
@@ -62,7 +54,6 @@ class _NewEmailState extends State<NewEmail> {
           Padding(
             padding: EdgeInsets.only(top: 5.0, bottom:5.0),
             child: TextField(
-              textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.next,
               controller: _toController,
               style: textStyle,
