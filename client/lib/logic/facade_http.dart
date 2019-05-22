@@ -23,7 +23,6 @@ class FacadeHttp {
   IOClient _ioClient;
 
   FacadeHttp(){
-      print('FacadeToken:$_token');
       _setClient();
   }
 
@@ -31,7 +30,6 @@ class FacadeHttp {
     this._httpClient= new HttpClient()
         ..badCertificateCallback =
         ((X509Certificate cert, String host, int port) {
-          print("CERTIFICADO HTTP");
           // tests that cert is self signed, correct subject and correct date(s)
           return true;
         });
@@ -50,7 +48,6 @@ class FacadeHttp {
     
     if (user.isNotEmpty &&
         pass.isNotEmpty) {
-          print("Clicked");
 
 
       var login = Map<String, dynamic>();
@@ -62,15 +59,11 @@ class FacadeHttp {
           .put('$BASE_URL/user/login',
           body: login)
           .then((response)  {
-              print("Login:");
-              print('Response: ${response.statusCode}  Body:${response.body} ');
 
               if(response.body.contains('Login Error'))
                 return false;
               
               if(!(response.body.contains('rr'))){
-                print("token gerado");
-                print(response.body);
                 _token = response.body;
 
                 this._ioClient.get(
@@ -78,10 +71,8 @@ class FacadeHttp {
                     headers: {
                       'Authorization': 'Bearer $_token',
                     }).then((value) {
-                      print("NEWYasasSER: ${value.body}");
                       var infoNewUser = JSON.jsonDecode(value.body);
                       
-                      //print("ox: ${infoNewUser['name']}");
 
                       User newUser = User(
                         infoNewUser['idUser'],
@@ -102,8 +93,6 @@ class FacadeHttp {
            }
           )
           .catchError((err) {
-            print(err.toString());
-            print('deu ruim');
       });
     }
   }
@@ -111,7 +100,6 @@ class FacadeHttp {
   void submitSign(String name, String user  , String pass, BuildContext context) {
     if (user.isNotEmpty &&
         pass.isNotEmpty && name.isNotEmpty) {
-          print("Clicked");
 
       var sign = Map<dynamic, dynamic>();
 
@@ -125,11 +113,8 @@ class FacadeHttp {
             headers: { "Accept": "application/json" },
             )
           .then((response) {
-            print("Signup:");
-            print('Response: ${response.statusCode}  Body:${response.body} ');
 
             if(response.body == "Signup Success"){ 
-              print("Deu certo signup");
               
                 Navigator.pushReplacement(
                   context,
@@ -138,8 +123,6 @@ class FacadeHttp {
             }
         })
           .catchError((err) {
-            print(err.toString());
-            print('Não funcionou');
 
       });
     }
@@ -159,20 +142,14 @@ class FacadeHttp {
             },
           body: logout)
           .then((response)  {
-              print("Logout:");
-              print('Response: ${response.statusCode}  Body:${response.body} ');
-
-              
-                  print("logout feito");
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
+      
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
 
               }
             )
           .catchError((err) {
-            print(err.toString());
-            print('deu ruim');
       });
 
   }
@@ -198,12 +175,9 @@ class FacadeHttp {
         "Accept": "application/json"
       },
       ).then((response) {
-        print("chat criado");
-        print('Response: ${response.statusCode}  Body:${response.body}');
       })
       .catchError((err) {
         print(err.toString());
-        print("Chat não foi criado");
       });
   }  
 
@@ -226,12 +200,9 @@ class FacadeHttp {
       },
       body: messageData,
       ).then((response) {
-        print("mensagem enviada????");
-        print('Response: ${response.statusCode}  Body:${response.body}');
       })
       .catchError((err) {
         print(err.toString());
-        print("Mensagem nao foi enviada");
       });
   }
 
@@ -260,17 +231,14 @@ class FacadeHttp {
         "Accept": "application/json"
       },
       ).then((response) {
-        print('Response: ${response.statusCode}  Body:${response.body}');
         if(response.statusCode == 200){
           var map = json.decode(response.body);
           users = map['users'];
         }
 
-          print(users);
       })
       .catchError((err) {
         print(err.toString());
-        print("Usuário não foi adicionado");
       });
   }
 
@@ -284,9 +252,6 @@ class FacadeHttp {
             nickname: nickname
           })
           .then((response)  {
-              print("Logout:");
-              print('Response: ${response.statusCode}  Body:${response.body} ');
-              
               if(response.body.contains('success')){
                 _token = '';
               }
@@ -294,7 +259,6 @@ class FacadeHttp {
           )
           .catchError((err) {
             print(err.toString());
-            print('Token não foi removido');
           });
   }
 

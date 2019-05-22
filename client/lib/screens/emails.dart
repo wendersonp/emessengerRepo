@@ -39,27 +39,18 @@ class _EmailsState extends State<Emails> {
         ChatNotifier((c) {
           setState(() {
 
-            print("Lista foi atualizada");
             _chats = c;
-            print(_chats);
           });
       
     }, facade, _currentUserState.nickname, _currentUserState.accessToken);
 
     
-    print("Fora do metodo $_chats");
     super.initState();
 
   }
 
   @override
   Widget build(BuildContext context) {
-      if (_currentUserState == null) {
-        debugPrint("No user");
-      } else {
-        debugPrint("Name: " + _currentUserState.name);
-        debugPrint("Nickname: " + _currentUserState.nickname);
-      }
     return Scaffold(
       appBar: AppBar(
         title: Text("Lista de conversas"),
@@ -130,7 +121,6 @@ class _EmailsState extends State<Emails> {
   Widget listEmailUser() {
     //int listSize = listEmailsCount(_currentUserState.chats);
     int listSize = listEmailsCount(_chats);
-    print("List size: $listSize");
     if(listSize == 0) {
       return Center(child: Text("Caixa de entrada vazia", style: TextStyle(color: Colors.black54)));
     }

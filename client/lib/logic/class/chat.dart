@@ -1,5 +1,6 @@
-import './message.dart';
-import './user.dart';
+
+import 'package:messenger_app/logic/class/message.dart';
+import 'package:messenger_app/logic/class/user.dart';
 
 class Chat {
   User _from;

@@ -287,8 +287,6 @@ class _LoginPageStates extends State<LoginPage> {
 
   submitLoginSemServer() {
     if( _userControllerLogin.text.isNotEmpty ) {
-      debugPrint("usuario logado");
-      //debugPrint(newUser.nickname);
       Navigator.push(
         context,
         MaterialPageRoute(

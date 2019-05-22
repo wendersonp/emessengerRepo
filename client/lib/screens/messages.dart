@@ -40,16 +40,10 @@ class _MessagesState extends State<Messages> {
     FacadeHttp facade = FacadeHttp.getIntance();
 
     MessageNotifier((m) {
-      print("Lista de mensagens?: $m");
       setState(() {
           messages = m;
-          print("Atualização mensagens");
-          print(messages);
-          print("==========================");
       });
     }, facade, _currentUserState.nickname, _idChatState.toString());
-    print("MESSAGENS");
-    print(messages);
 
     super.initState();
   }
@@ -102,8 +96,6 @@ class _MessagesState extends State<Messages> {
   }
 
   Widget screenChat() {
-        print("MESSAGENS");
-    print(messages);
     return Column(
       children: <Widget>[
         Flexible(
@@ -150,16 +142,12 @@ class _MessagesState extends State<Messages> {
     Intl.defaultLocale = 'pt_BR';
     initializeDateFormatting();
     var date = DateFormat.yMMMMd("pt_BR").format(DateTime.parse(messages[position]["sentTime"]));
-    //DateFormat.yMMMMd("pt_BR").format(DateTime.now())
-    debugPrint("Position: $position, ${messages.length}");
     if(messages.length == position+1) {
       return Column( children: <Widget>[Text( '$date'), Divider(height: 10.0,)]);
     }
     else if(position >= 0){
       int newMessageDay =  int.parse(messages[position]["sentTime"].substring(8,10));
       int oldMessageDay = int.parse(messages[position+1]["sentTime"].substring(8,10));
-      debugPrint(" newDay:$newMessageDay  oldDay: $oldMessageDay");
-      //debugPrint("${messages[position].date.substring(8,10)}");
       if(newMessageDay != oldMessageDay) {
         return Column( children: <Widget>[Text( '$date'), Divider(height: 10.0,)]);
       }
@@ -168,7 +156,6 @@ class _MessagesState extends State<Messages> {
   }
 
   Widget message(List messageList, int position) {
-    debugPrint("${messageList[position]["senderUser"]["nickname"]}");
     int newMessageDay =  int.parse(messages[position]["sentTime"].substring(8,10));
     int oldMessageDay = newMessageDay;
     if(position < messages.length-1) {
