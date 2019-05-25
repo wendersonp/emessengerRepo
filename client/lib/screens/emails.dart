@@ -52,8 +52,11 @@ class _EmailsState extends State<Emails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("Lista de conversas"),
+        iconTheme: new IconThemeData(color: Colors.white),
+        backgroundColor: Colors.black,
+        title: Text("Lista de conversas", style: TextStyle(color: Colors.white),),
       ),
       body:listEmailUser(),
       drawer: Drawer(
@@ -63,23 +66,25 @@ class _EmailsState extends State<Emails> {
             child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(top: 40.0),
+                padding: EdgeInsets.only(top: 60.0),
                 child: CircleAvatar(
-                  radius: 40.0,
-                  child: Text(_currentUserState.name..substring(0,1)),
+                  backgroundColor: Colors.teal,
+                  radius: 50.0,
+                  child: Icon(Icons.person)),
                 ),
-              ),
-              Padding(
+        
+              Padding( 
                 padding: EdgeInsets.only(top: 30.0),
-                child: Text("Olá"),
+                child: Text("Olá ${_currentUserState.name}"),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 120.0),
+                padding: EdgeInsets.only(top: 100.0),
                 child: Card(
+                  color: Colors.teal,
                   elevation: 2.0,
                   child: Padding(padding: EdgeInsets.symmetric(horizontal: 110.0), child: ListTile(
                   enabled: true,
-                  title: Text("Sair"),
+                  title: Text("Sair", style: TextStyle(color: Colors.white),),
                   onTap: () {
                     FacadeHttp facade = FacadeHttp.getIntance();
                              
@@ -100,6 +105,7 @@ class _EmailsState extends State<Emails> {
         },
         tooltip: "Enviar novo email",
         child: Icon(Icons.add),
+        backgroundColor: Colors.teal,
       ),
     );
   }
@@ -143,13 +149,14 @@ class _EmailsState extends State<Emails> {
           elevation: 2.0,
           child: ListTile(
             //leading: Text(to.substring(0,1)),
-            leading: Text("${sub.substring(0,1)}"),
+            leading: Icon(Icons.people_outline),
             title: Text("$to    $dateHm", 
               style: TextStyle(
                 fontWeight: FontWeight.w500,
+                color: Colors.black
                 ),
               ),
-            subtitle: Text("$sub"),
+            subtitle: Text("$sub", style: TextStyle(color: Colors.black),),
             onTap: () {
               Navigator.push(context,
               MaterialPageRoute(

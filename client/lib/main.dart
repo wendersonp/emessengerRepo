@@ -12,14 +12,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         textSelectionColor: Colors.white,
-        primarySwatch: Colors.deepOrange,
-        primaryColor: Color(0xFF6200EE),
-        accentColor: Color(0xFF03DAC5),
-        highlightColor: Color(0xFF3700B3),
+        primarySwatch: Colors.teal,
+        primaryColor: Colors.white,
+        accentColor: Colors.teal,
+        highlightColor: Colors.white,
         hintColor: Colors.black54,
+        bottomAppBarColor: Colors.white,
+        appBarTheme: AppBarTheme(color: Colors.white),
         fontFamily: 'Montserrat',
         textTheme: TextTheme(
-          body1: TextStyle(fontSize: 20.0, fontFamily: 'Montserrat',color: Colors.black, decorationColor: Colors.white),
+          body1: TextStyle(fontSize: 20.0, fontFamily: 'Montserrat',color: Colors.black, decorationColor: Colors.teal),
           title: TextStyle(color: Colors.white)
         )
         //primarySwatch: Colors.teal,

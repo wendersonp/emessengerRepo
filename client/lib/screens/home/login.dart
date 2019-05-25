@@ -153,7 +153,7 @@ class _LoginPageStates extends State<LoginPage> {
                           height: 50,
                           minWidth: 200,
                           child: RaisedButton(
-                            color: Colors.deepOrangeAccent,
+                            color: Colors.teal,
                             textColor: Colors.white,
                             child: Text('Login'),
                             shape: RoundedRectangleBorder(
@@ -263,7 +263,7 @@ class _LoginPageStates extends State<LoginPage> {
                           height: 50,
                           minWidth: 200,
                           child: RaisedButton(
-                            color: Colors.deepOrangeAccent,
+                            color: Colors.teal,
                             textColor: Colors.white,
                             child: Text('Criar conta'),
                             shape: RoundedRectangleBorder(
@@ -271,7 +271,18 @@ class _LoginPageStates extends State<LoginPage> {
                             onPressed: () async {
                               FacadeHttp facade = FacadeHttp.getIntance();
                              
-                              facade.submitSign(_nameControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text, context);
+                              facade.submitSign(_nameControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text, context)
+                              .then((sucess){
+                                if(!sucess){
+                                  showDialog(context: context, builder: (context) {
+                                    CloseButton button = CloseButton(key: Key('X'));
+
+                                    return AlertDialog(title: Text('Erro'),
+                                                       content: Text('Não foi possível efetuar o cadastro! Escolha outro nome de usuário.'),
+                                                       actions: <Widget>[button] );
+                                  });
+                                }
+                              });
                                 
                             },
                           )

@@ -97,7 +97,7 @@ class FacadeHttp {
     }
   }
 
-  void submitSign(String name, String user  , String pass, BuildContext context) {
+  Future<bool> submitSign(String name, String user  , String pass, BuildContext context) async{
     if (user.isNotEmpty &&
         pass.isNotEmpty && name.isNotEmpty) {
 
@@ -107,7 +107,7 @@ class FacadeHttp {
       sign['nickname'] = user;
       sign['password'] = pass;
       
-      this._ioClient
+      return await this._ioClient
           .post(
             '$BASE_URL/user/signup?name=$name&nickname=$user&password=$pass',
             headers: { "Accept": "application/json" },
@@ -119,8 +119,10 @@ class FacadeHttp {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
-
+                  return true;
             }
+
+            return false;
         })
           .catchError((err) {
 

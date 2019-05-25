@@ -119,6 +119,7 @@ class _MessagesState extends State<Messages> {
                 hintText: 'Digite...',
                 suffixIcon: IconButton(
                     icon: Icon(Icons.send),
+                    color: Colors.black,
                     onPressed: () {
 
 

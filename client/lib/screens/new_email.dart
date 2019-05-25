@@ -43,44 +43,53 @@ class _NewEmailState extends State<NewEmail> {
     );
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
+        iconTheme: new IconThemeData(color: Colors.white),
+        backgroundColor: Colors.black,
         automaticallyImplyLeading: true,
-        title: Text("Enviar novo email"),
+        title: Text("Enviar novo email" , style: TextStyle(color: Colors.white),),
       ),
       body: Padding(
         padding: EdgeInsets.all(5.0),
         child:ListView(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(top: 5.0, bottom:5.0),
+            padding: EdgeInsets.only(top: 10.0, bottom:5.0),
             child: TextField(
               textInputAction: TextInputAction.next,
               controller: _toController,
               style: textStyle,
               decoration: InputDecoration(
+                fillColor: Colors.white,
+                filled: true,
                 border: OutlineInputBorder(),
-                labelText: "Para",
+                hintText: "Para",
                 labelStyle: labelStyle,
             ),
            ), 
           ),
           Padding(
-            padding: EdgeInsets.only(top: 5.0, bottom:5.0),
+            padding: EdgeInsets.only(top: 10.0, bottom:60.0),
             child: TextField(
               textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.next,
               controller: _subjectController,
               style: textStyle,
               decoration: InputDecoration(
+                fillColor: Colors.white,
+                filled: true,
                 border: OutlineInputBorder(),
-                labelText: "Assunto",
+                hintText: "Assunto",
                 labelStyle: labelStyle,
             ),
            ), 
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 25.0, left: 150.0, right: 20.0),
-            child: ButtonTheme(
+          Center(
+           // padding: EdgeInsets.only(top: 25.0, left: 150.0, right: 20.0),
+            child: ButtonTheme
+            (
+              padding: EdgeInsets.all(25),
               height: 60.0,
               minWidth: 100.0,
               child: RaisedButton(
@@ -101,7 +110,7 @@ class _NewEmailState extends State<NewEmail> {
                   ),
                 child: Text("Enviar",
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold),
                     textScaleFactor: 1.5,
                   
