@@ -13,7 +13,7 @@ import 'package:messenger_app/screens/home/login.dart';
 
 class FacadeHttp {
 
-  static const String BASE_URL = 'https://dry-peak-13680.herokuapp.com';
+  static const String BASE_URL = 'http://150.165.202.45:32448';
   
   static FacadeHttp _instance;
   static String _token;
