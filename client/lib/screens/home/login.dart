@@ -6,6 +6,8 @@ import 'package:messenger_app/screens/emails.dart';
 
 import 'package:messenger_app/logic/facade_http.dart';
 
+import 'package:fluttertoast/fluttertoast.dart';
+
 class LoginPage extends StatefulWidget {
 
   State<StatefulWidget> createState() => _LoginPageStates();
@@ -19,6 +21,8 @@ class _LoginPageStates extends State<LoginPage> {
   TextEditingController _userdControllerSign = TextEditingController();
   TextEditingController _passwordControllerSign = TextEditingController();
   TextEditingController _nameControllerSign = TextEditingController();
+  TextEditingController _control = TextEditingController(); 
+  FacadeHttp _facade = FacadeHttp.getIntance();
 
   static String tag = 'login-page';
   String valor = "";
@@ -37,8 +41,21 @@ class _LoginPageStates extends State<LoginPage> {
         Scaffold(
           backgroundColor: Colors.black,
           body: getContainer(),
-
-      );
+          bottomNavigationBar: new BottomAppBar(
+            color: Colors.black,
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              
+                children: <Widget>[
+                  IconButton(
+                    color: Colors.white,
+                    onPressed: () {
+                    getContainerIP();
+                  }, icon: Icon(Icons.settings)),
+                ],
+              ),
+            ),
+        );
   }
 
   Widget getContainer(){
@@ -94,7 +111,7 @@ class _LoginPageStates extends State<LoginPage> {
 
   Widget getContentLogin() {
     return (
-
+        
         Center(
 
             child: Column(
@@ -159,9 +176,9 @@ class _LoginPageStates extends State<LoginPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25.0)),
                             onPressed: ()  {
-                              FacadeHttp facade = FacadeHttp.getIntance();
+                              
 
-                              facade.submitLogin(_userControllerLogin.text, _passwordControllerLogin.text, context)
+                              _facade.submitLogin(_userControllerLogin.text, _passwordControllerLogin.text, context)
                               .then((valid){
                                 if(!valid){
                                   showDialog(context: context, builder: (context) {
@@ -269,9 +286,8 @@ class _LoginPageStates extends State<LoginPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25.0)),
                             onPressed: () async {
-                              FacadeHttp facade = FacadeHttp.getIntance();
-                             
-                              facade.submitSign(_nameControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text, context)
+                                                           
+                              _facade.submitSign(_nameControllerSign.text, _userdControllerSign.text, _passwordControllerSign.text, context)
                               .then((sucess){
                                 if(!sucess){
                                   showDialog(context: context, builder: (context) {
@@ -304,5 +320,49 @@ class _LoginPageStates extends State<LoginPage> {
           builder: (BuildContext context) =>
             Emails(User(555,"test","test","test", []))));
     }
+  }
+
+  void getContainerIP(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text("Coloque o endereço do servidor :", style: TextStyle(color: Colors.black),),
+          content:TextFormField(
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              filled: true,
+              hintText: "url",
+            ),
+            controller: _control,
+            textInputAction: TextInputAction.done,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0)
+          ),
+          actions: <Widget>[
+            RaisedButton(
+              child: new Text("Confirmar", style: TextStyle(color: Colors.white),),
+              onPressed: (){
+                Navigator.of(context).pop();
+                _facade.setIP(_control.text);
+                Fluttertoast.showToast(
+                  msg: "Base Url: ${_facade.getIP()}",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIos: 1,
+                  backgroundColor: Colors.white,
+                  textColor: Colors.black,
+                  fontSize: 16.0
+                );
+              },
+            )
+          ],
+        );
+      
+        
+      }
+
+    );  
   }
 }

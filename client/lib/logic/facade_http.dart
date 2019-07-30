@@ -13,7 +13,7 @@ import 'package:messenger_app/screens/home/login.dart';
 
 class FacadeHttp {
 
-  static const String BASE_URL = 'http://150.165.202.45:32448';
+  static  String BASE_URL = 'http://150.165.202.45:32448';
   
   static FacadeHttp _instance;
   static String _token;
@@ -25,6 +25,22 @@ class FacadeHttp {
   FacadeHttp(){
       _setClient();
   }
+
+
+  static FacadeHttp getIntance(){
+      if(_instance ==null) _instance = new FacadeHttp();
+        return _instance;
+  }
+
+  void setIP(String newIp){
+    if(newIp=="") return;
+    BASE_URL = newIp;
+  }
+
+  String getIP(){
+    return BASE_URL;
+  }
+
 
   void _setClient(){
     this._httpClient= new HttpClient()
@@ -39,10 +55,7 @@ class FacadeHttp {
   }
 
 
-  static FacadeHttp getIntance(){
-      if(_instance ==null) _instance = new FacadeHttp();
-        return _instance;
-  }
+  
 
   Future<bool> submitLogin(String user, String pass, BuildContext context) async {
     
